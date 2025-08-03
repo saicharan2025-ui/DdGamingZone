@@ -1,153 +1,207 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>DD Gaming Zone Tracker</title>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>DD Gaming Zone Dashboard</title>
   <style>
     body {
-      margin: 0;
-      padding: 0;
-      background: url('https://i.pinimg.com/736x/09/59/c1/0959c15a2deff25ab32e843a8397d6fa.jpg') no-repeat center center fixed;
-      background-size: cover;
       font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-    }
-
-    .theme-dark, .theme-light {
-      max-width: 900px;
-      margin: 30px auto;
-      padding: 20px;
-      border-radius: 10px;
-      backdrop-filter: blur(10px);
-    }
-
-    .theme-dark {
-      background-color: rgba(0, 0, 0, 0.7);
+      margin: 0;
+      background: linear-gradient(to right, #0f2027, #203a43, #2c5364);
       color: #fff;
     }
 
-    .theme-light {
-      background-color: rgba(255, 255, 255, 0.8);
-      color: #000;
+    .header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 1rem 2rem;
+      background: rgba(0, 0, 0, 0.7);
+      position: sticky;
+      top: 0;
+      z-index: 1000;
     }
 
-    label, input, select {
+    .header h1 {
+      margin: 0;
+      font-size: 1.8rem;
+    }
+
+    .main-container {
+      display: grid;
+      grid-template-columns: 1fr 2fr;
+      gap: 2rem;
+      padding: 2rem;
+    }
+
+    .form-section, .status-section {
+      background: rgba(255, 255, 255, 0.05);
+      border-radius: 10px;
+      padding: 1.5rem;
+      box-shadow: 0 0 10px rgba(0,0,0,0.5);
+    }
+
+    .form-section h2, .status-section h2 {
+      margin-top: 0;
+    }
+
+    .form-group {
+      margin-bottom: 1rem;
+    }
+
+    .form-group label {
       display: block;
+      margin-bottom: 0.5rem;
+    }
+
+    .form-group input, .form-group select {
       width: 100%;
-      margin-bottom: 12px;
+      padding: 0.5rem;
+      border: none;
+      border-radius: 5px;
+      font-size: 1rem;
+    }
+
+    .form-group input[type="checkbox"] {
+      width: auto;
     }
 
     button {
-      padding: 10px 20px;
-      font-size: 1rem;
-      margin-top: 10px;
-      cursor: pointer;
+      background: #00c6ff;
       border: none;
+      padding: 0.6rem 1.2rem;
       border-radius: 5px;
+      color: white;
+      font-weight: bold;
+      cursor: pointer;
     }
 
-    #entries {
-      margin-top: 30px;
+    .status-list {
+      margin-top: 1rem;
+      max-height: 400px;
+      overflow-y: auto;
     }
 
-    .entry {
-      padding: 10px;
-      border-bottom: 1px solid #aaa;
+    .status-card {
+      background: rgba(255,255,255,0.1);
+      margin-bottom: 1rem;
+      padding: 1rem;
+      border-radius: 8px;
     }
 
-    .toggle {
-      margin-bottom: 20px;
+    .status-card p {
+      margin: 0.3rem 0;
+    }
+
+    .timer {
+      font-size: 1.2rem;
+      font-weight: bold;
+    }
+
+    @media (max-width: 768px) {
+      .main-container {
+        grid-template-columns: 1fr;
+      }
     }
   </style>
 </head>
 <body>
-  <div id="app" class="theme-dark">
-    <div class="toggle">
-      <label for="themeToggle">🌗 Toggle Theme</label>
-      <input type="checkbox" id="themeToggle">
+  <div class="header">
+    <h1>🎮 DD Gaming Zone Dashboard</h1>
+  </div>
+  <div class="main-container">
+    <div class="form-section">
+      <h2>Register Player</h2>
+      <form id="registerForm">
+        <div class="form-group">
+          <label for="name">Name:</label>
+          <input type="text" id="name" required>
+        </div>
+        <div class="form-group">
+          <label for="mobile">Mobile Number:</label>
+          <input type="tel" id="mobile" required>
+        </div>
+        <div class="form-group">
+          <label for="address">Address:</label>
+          <input type="text" id="address" required>
+        </div>
+        <div class="form-group">
+          <label for="system">System Allocated:</label>
+          <select id="system">
+            <option value="PC-1">PC-1</option>
+            <option value="PC-2">PC-2</option>
+            <option value="PC-3">PC-3</option>
+            <option value="PC-4">PC-4</option>
+            <option value="PC-5">PC-5</option>
+            <option value="PC-6">PC-6</option>
+            <option value="PS5-1">PlayStation 5 - 1</option>
+            <option value="PS5-2">PlayStation 5 - 2</option>
+          </select>
+        </div>
+        <div class="form-group">
+          <label><input type="checkbox" id="isChild"> Under 12 Years</label>
+        </div>
+        <div class="form-group">
+          <label for="duration">Time Allotted (minutes):</label>
+          <input type="number" id="duration" min="15" max="240" value="60" required>
+        </div>
+        <button type="submit">Start Session</button>
+      </form>
     </div>
 
-    <h2>DD Gaming Zone - Player Registration</h2>
-    <form id="entryForm">
-      <label>Name <input type="text" id="name" required /></label>
-      <label>Mobile Number <input type="tel" id="mobile" required /></label>
-      <label>Address <input type="text" id="address" required /></label>
-      <label>System Allocated
-        <select id="system">
-          <option value="PC-1">PC-1</option>
-          <option value="PC-2">PC-2</option>
-          <option value="PC-3">PC-3</option>
-          <option value="PC-4">PC-4</option>
-          <option value="PC-5">PC-5</option>
-          <option value="PC-6">PC-6</option>
-          <option value="PS5-1">PS5-1</option>
-          <option value="PS5-2">PS5-2</option>
-        </select>
-      </label>
-      <label>Session Time (in minutes)
-        <input type="number" id="duration" min="1" value="60" required />
-      </label>
-      <label><input type="checkbox" id="isChild"> Below 12 Years</label>
-      <button type="submit">Start Session</button>
-    </form>
-
-    <div id="entries"></div>
+    <div class="status-section">
+      <h2>Active Sessions</h2>
+      <div class="status-list" id="sessionList"></div>
+    </div>
   </div>
 
   <script>
-    const form = document.getElementById('entryForm');
-    const entriesDiv = document.getElementById('entries');
-    const themeToggle = document.getElementById('themeToggle');
-    const appDiv = document.getElementById('app');
+    const sessionList = document.getElementById('sessionList');
 
-    themeToggle.addEventListener('change', () => {
-      appDiv.className = themeToggle.checked ? 'theme-light' : 'theme-dark';
-    });
-
-    form.addEventListener('submit', function(e) {
+    document.getElementById('registerForm').addEventListener('submit', function(e) {
       e.preventDefault();
       const name = document.getElementById('name').value;
       const mobile = document.getElementById('mobile').value;
       const address = document.getElementById('address').value;
       const system = document.getElementById('system').value;
-      const duration = parseInt(document.getElementById('duration').value);
       const isChild = document.getElementById('isChild').checked;
+      const duration = parseInt(document.getElementById('duration').value);
 
-      const endTime = Date.now() + duration * 60000;
+      const startTime = new Date();
+      const endTime = new Date(startTime.getTime() + duration * 60000);
 
-      const entry = document.createElement('div');
-      entry.className = 'entry';
-      const timerId = `timer-${Date.now()}`;
+      const sessionDiv = document.createElement('div');
+      sessionDiv.classList.add('status-card');
+      sessionDiv.innerHTML = `
+        <p><strong>${name}</strong> (${system})</p>
+        <p>📍 ${address}</p>
+        <p>📱 ${mobile}</p>
+        <p class="timer" id="timer-${system}">Time left: ${duration}:00</p>
+      `;
+      sessionList.appendChild(sessionDiv);
 
-      entry.innerHTML = `<strong>${name}</strong> on <strong>${system}</strong><br>
-        Time left: <span id="${timerId}"></span>`;
+      const timerElement = document.getElementById(`timer-${system}`);
 
-      entriesDiv.appendChild(entry);
+      let secondsLeft = duration * 60;
+      const interval = setInterval(() => {
+        secondsLeft--;
+        const min = Math.floor(secondsLeft / 60);
+        const sec = secondsLeft % 60;
+        timerElement.textContent = `Time left: ${min}:${sec.toString().padStart(2, '0')}`;
 
-      const timer = setInterval(() => {
-        const now = Date.now();
-        const remaining = endTime - now;
-
-        if (remaining <= 0) {
-          clearInterval(timer);
-          document.getElementById(timerId).textContent = '⏰ Time Over!';
+        if (secondsLeft <= 0) {
+          clearInterval(interval);
+          timerElement.textContent = '⏰ Time is up!';
 
           if (isChild) {
-            const message = `Child ${name} has exceeded allotted time on ${system}. Approve more time?`;
-            const encoded = encodeURIComponent(message);
-            window.open(`https://wa.me/919966031085?text=${encoded}`);
-          } else {
-            alert(`Time is up for ${name} on ${system}`);
+            alert(`Child ${name} has exceeded time. Send approval message to ${mobile}`);
+            // Future: Integrate WhatsApp API call here
           }
-        } else {
-          const hrs = Math.floor(remaining / 3600000);
-          const mins = Math.floor((remaining % 3600000) / 60000);
-          const secs = Math.floor((remaining % 60000) / 1000);
-          document.getElementById(timerId).textContent = `${hrs}h ${mins}m ${secs}s`;
         }
       }, 1000);
 
-      form.reset();
+      this.reset();
     });
   </script>
 </body>
