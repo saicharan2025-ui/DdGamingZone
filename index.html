@@ -103,7 +103,7 @@
         children[name].time++;
         document.getElementById(`timer-${name}`).innerText = `Session: ${formatTime(children[name].time)}`;
 
-        if (children[name].time === 7200 && !children[name].extended) {
+        if (children[name].time === 10 && !children[name].extended) {
           stopTimer(name);
           const code = prompt(`2-hour limit reached for ${name}. Enter parent approval code to continue:`);
           if (code === parentCode) {
