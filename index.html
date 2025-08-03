@@ -3,206 +3,196 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>DD Gaming Zone Dashboard</title>
+  <title>Gaming Zone Tracker</title>
+  <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@500&display=swap" rel="stylesheet">
   <style>
     body {
-      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
       margin: 0;
-      background: linear-gradient(to right, #0f2027, #203a43, #2c5364);
-      color: #fff;
+      font-family: 'Orbitron', sans-serif;
+      background-image: url('https://c4.wallpaperflare.com/wallpaper/793/738/376/pubg-video-games-helmet-reflection-wallpaper-preview.jpg');
+      background-size: cover;
+      background-attachment: fixed;
+      background-position: center;
+      backdrop-filter: brightness(0.8);
+      color: white;
     }
 
-    .header {
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      padding: 1rem 2rem;
-      background: rgba(0, 0, 0, 0.7);
-      position: sticky;
-      top: 0;
-      z-index: 1000;
+    .container {
+      max-width: 800px;
+      margin: auto;
+      padding: 20px;
+      background: rgba(0, 0, 0, 0.6);
+      border-radius: 15px;
+      margin-top: 30px;
     }
 
-    .header h1 {
-      margin: 0;
-      font-size: 1.8rem;
+    h2 {
+      text-align: center;
+      color: #f0db4f;
     }
 
-    .main-container {
-      display: grid;
-      grid-template-columns: 1fr 2fr;
-      gap: 2rem;
-      padding: 2rem;
-    }
-
-    .form-section, .status-section {
-      background: rgba(255, 255, 255, 0.05);
-      border-radius: 10px;
-      padding: 1.5rem;
-      box-shadow: 0 0 10px rgba(0,0,0,0.5);
-    }
-
-    .form-section h2, .status-section h2 {
-      margin-top: 0;
-    }
-
-    .form-group {
-      margin-bottom: 1rem;
-    }
-
-    .form-group label {
+    label, input, select {
       display: block;
-      margin-bottom: 0.5rem;
-    }
-
-    .form-group input, .form-group select {
       width: 100%;
-      padding: 0.5rem;
-      border: none;
-      border-radius: 5px;
-      font-size: 1rem;
-    }
-
-    .form-group input[type="checkbox"] {
-      width: auto;
+      margin: 10px 0;
     }
 
     button {
-      background: #00c6ff;
-      border: none;
-      padding: 0.6rem 1.2rem;
-      border-radius: 5px;
-      color: white;
+      width: 100%;
+      padding: 12px;
+      background-color: #f0db4f;
+      color: black;
       font-weight: bold;
+      border: none;
+      border-radius: 8px;
       cursor: pointer;
     }
 
-    .status-list {
-      margin-top: 1rem;
-      max-height: 400px;
-      overflow-y: auto;
+    .session-container {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 16px;
+      margin-top: 20px;
+      justify-content: center;
     }
 
-    .status-card {
-      background: rgba(255,255,255,0.1);
-      margin-bottom: 1rem;
-      padding: 1rem;
-      border-radius: 8px;
+    .session-card {
+      width: 220px;
+      padding: 15px;
+      border-radius: 12px;
+      color: white;
+      font-family: 'Orbitron', sans-serif;
+      transition: all 0.5s ease;
+      box-shadow: 0 0 15px rgba(0,0,0,0.3);
+      animation: fadeInDown 0.7s;
+      background-size: cover;
+      background-position: center;
     }
 
-    .status-card p {
-      margin: 0.3rem 0;
-    }
+    .session-green { background-color: rgba(0, 128, 0, 0.8); }
+    .session-orange { background-color: rgba(255, 165, 0, 0.8); }
+    .session-red { background-color: rgba(255, 0, 0, 0.9); }
 
-    .timer {
-      font-size: 1.2rem;
-      font-weight: bold;
-    }
-
-    @media (max-width: 768px) {
-      .main-container {
-        grid-template-columns: 1fr;
-      }
+    @keyframes fadeInDown {
+      from { transform: translateY(-20px); opacity: 0; }
+      to { transform: translateY(0); opacity: 1; }
     }
   </style>
 </head>
 <body>
-  <div class="header">
-    <h1>🎮 DD Gaming Zone Dashboard</h1>
-  </div>
-  <div class="main-container">
-    <div class="form-section">
-      <h2>Register Player</h2>
-      <form id="registerForm">
-        <div class="form-group">
-          <label for="name">Name:</label>
-          <input type="text" id="name" required>
-        </div>
-        <div class="form-group">
-          <label for="mobile">Mobile Number:</label>
-          <input type="tel" id="mobile" required>
-        </div>
-        <div class="form-group">
-          <label for="address">Address:</label>
-          <input type="text" id="address" required>
-        </div>
-        <div class="form-group">
-          <label for="system">System Allocated:</label>
-          <select id="system">
-            <option value="PC-1">PC-1</option>
-            <option value="PC-2">PC-2</option>
-            <option value="PC-3">PC-3</option>
-            <option value="PC-4">PC-4</option>
-            <option value="PC-5">PC-5</option>
-            <option value="PC-6">PC-6</option>
-            <option value="PS5-1">PlayStation 5 - 1</option>
-            <option value="PS5-2">PlayStation 5 - 2</option>
-          </select>
-        </div>
-        <div class="form-group">
-          <label><input type="checkbox" id="isChild"> Under 12 Years</label>
-        </div>
-        <div class="form-group">
-          <label for="duration">Time Allotted (minutes):</label>
-          <input type="number" id="duration" min="15" max="240" value="60" required>
-        </div>
-        <button type="submit">Start Session</button>
-      </form>
-    </div>
+  <div class="container">
+    <h2>🎮 Gaming Zone Tracker</h2>
+    <form id="gamingForm">
+      <label>Name:</label>
+      <input type="text" id="name" required />
 
-    <div class="status-section">
-      <h2>Active Sessions</h2>
-      <div class="status-list" id="sessionList"></div>
-    </div>
+      <label>Mobile:</label>
+      <input type="tel" id="mobile" required />
+
+      <label>Address:</label>
+      <input type="text" id="address" required />
+
+      <label>System Allocated:</label>
+      <select id="system">
+        <option value="PC-1">PC-1</option>
+        <option value="PC-2">PC-2</option>
+        <option value="PC-3">PC-3</option>
+        <option value="PC-4">PC-4</option>
+        <option value="PC-5">PC-5</option>
+        <option value="PC-6">PC-6</option>
+        <option value="PS5-1">PlayStation 5 - 1</option>
+        <option value="PS5-2">PlayStation 5 - 2</option>
+      </select>
+
+      <label>Time Allocated (in minutes):</label>
+      <input type="number" id="time" required />
+
+      <label><input type="checkbox" id="isChild" /> Child (below 12 years)</label>
+
+      <button type="submit">Start Session</button>
+    </form>
   </div>
+
+  <div id="activeSessions" class="session-container"></div>
 
   <script>
-    const sessionList = document.getElementById('sessionList');
+    const activeSessions = document.getElementById("activeSessions");
+    const parentMobile = "9966031085";
 
-    document.getElementById('registerForm').addEventListener('submit', function(e) {
+    document.getElementById("gamingForm").addEventListener("submit", function(e) {
       e.preventDefault();
-      const name = document.getElementById('name').value;
-      const mobile = document.getElementById('mobile').value;
-      const address = document.getElementById('address').value;
-      const system = document.getElementById('system').value;
-      const isChild = document.getElementById('isChild').checked;
-      const duration = parseInt(document.getElementById('duration').value);
+      const name = document.getElementById("name").value;
+      const mobile = document.getElementById("mobile").value;
+      const address = document.getElementById("address").value;
+      const system = document.getElementById("system").value;
+      const time = parseInt(document.getElementById("time").value);
+      const isChild = document.getElementById("isChild").checked;
+      const timeInSeconds = time * 60;
 
-      const startTime = new Date();
-      const endTime = new Date(startTime.getTime() + duration * 60000);
+      const entry = {
+        name,
+        system,
+        allocatedTime: timeInSeconds,
+        isChild,
+        parentMobile: mobile
+      };
 
-      const sessionDiv = document.createElement('div');
-      sessionDiv.classList.add('status-card');
-      sessionDiv.innerHTML = `
-        <p><strong>${name}</strong> (${system})</p>
-        <p>📍 ${address}</p>
-        <p>📱 ${mobile}</p>
-        <p class="timer" id="timer-${system}">Time left: ${duration}:00</p>
+      createSessionCard(entry, timeInSeconds);
+      this.reset();
+    });
+
+    function createSessionCard(entry, remainingSeconds) {
+      const card = document.createElement("div");
+      card.classList.add("session-card");
+      card.setAttribute("id", `card-${entry.system}`);
+
+      const percentageLeft = remainingSeconds / entry.allocatedTime;
+      if (percentageLeft < 0.1) card.classList.add("session-red");
+      else if (percentageLeft < 0.2) card.classList.add("session-orange");
+      else card.classList.add("session-green");
+
+      card.innerHTML = `
+        <h4>${entry.name}</h4>
+        <p><strong>System:</strong> ${entry.system}</p>
+        <p><strong>Time Left:</strong> <span id="timer-${entry.system}">${formatTime(remainingSeconds)}</span></p>
+        <p><strong>Child:</strong> ${entry.isChild ? "Yes" : "No"}</p>
       `;
-      sessionList.appendChild(sessionDiv);
 
-      const timerElement = document.getElementById(`timer-${system}`);
+      activeSessions.appendChild(card);
 
-      let secondsLeft = duration * 60;
       const interval = setInterval(() => {
-        secondsLeft--;
-        const min = Math.floor(secondsLeft / 60);
-        const sec = secondsLeft % 60;
-        timerElement.textContent = `Time left: ${min}:${sec.toString().padStart(2, '0')}`;
+        remainingSeconds--;
+        const timerEl = document.getElementById(`timer-${entry.system}`);
+        if (timerEl) timerEl.textContent = formatTime(remainingSeconds);
 
-        if (secondsLeft <= 0) {
+        const percent = remainingSeconds / entry.allocatedTime;
+        card.className = "session-card";
+        if (percent < 0.1) card.classList.add("session-red");
+        else if (percent < 0.2) card.classList.add("session-orange");
+        else card.classList.add("session-green");
+
+        if (remainingSeconds <= 0) {
           clearInterval(interval);
-          timerElement.textContent = '⏰ Time is up!';
-
-          if (isChild) {
-            alert(`Child ${name} has exceeded time. Send approval message to ${mobile}`);
-            // Future: Integrate WhatsApp API call here
+          card.remove();
+          if (entry.isChild) {
+            sendWhatsAppApproval(entry.name, entry.parentMobile);
           }
         }
       }, 1000);
+    }
 
-      this.reset();
-    });
+    function formatTime(sec) {
+      const h = Math.floor(sec / 3600).toString().padStart(2, '0');
+      const m = Math.floor((sec % 3600) / 60).toString().padStart(2, '0');
+      const s = (sec % 60).toString().padStart(2, '0');
+      return `${h}:${m}:${s}`;
+    }
+
+    function sendWhatsAppApproval(childName, mobile) {
+      const message = `Hi, your child ${childName} has exceeded their allocated gaming time. Please reply YES to approve more time.`;
+      const url = `https://wa.me/${mobile}?text=${encodeURIComponent(message)}`;
+      window.open(url, "_blank");
+    }
   </script>
 </body>
 </html>
