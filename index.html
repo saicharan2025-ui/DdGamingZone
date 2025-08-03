@@ -1,109 +1,93 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>DD Gaming Zone - Tracker</title>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>DD Gaming Zone Tracker</title>
   <style>
     body {
       margin: 0;
-      font-family: 'Segoe UI', sans-serif;
-      background-color: #121212;
-      color: #f0f0f0;
-      transition: all 0.3s;
+      padding: 0;
+      background: url('https://i.imgur.com/h9Z3oEe.jpg') no-repeat center center fixed;
+      background-size: cover;
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
     }
-    .light {
-      background-color: #ffffff;
-      color: #000000;
-    }
-    .container {
+
+    .theme-dark, .theme-light {
+      max-width: 900px;
+      margin: 30px auto;
       padding: 20px;
-      max-width: 1000px;
-      margin: auto;
+      border-radius: 10px;
+      backdrop-filter: blur(10px);
     }
-    h1 {
-      text-align: center;
+
+    .theme-dark {
+      background-color: rgba(0, 0, 0, 0.7);
+      color: #fff;
     }
-    label {
+
+    .theme-light {
+      background-color: rgba(255, 255, 255, 0.8);
+      color: #000;
+    }
+
+    label, input, select {
       display: block;
-      margin: 10px 0 5px;
-    }
-    input, select {
       width: 100%;
-      padding: 8px;
-      margin-bottom: 15px;
+      margin-bottom: 12px;
     }
+
     button {
       padding: 10px 20px;
-      background: #00c853;
-      color: white;
-      border: none;
+      font-size: 1rem;
+      margin-top: 10px;
       cursor: pointer;
-      font-weight: bold;
-      border-radius: 6px;
+      border: none;
+      border-radius: 5px;
     }
+
+    #entries {
+      margin-top: 30px;
+    }
+
     .entry {
-      border: 1px solid #444;
       padding: 10px;
-      margin: 10px 0;
-      border-radius: 8px;
-      background-color: #1e1e1e;
+      border-bottom: 1px solid #aaa;
     }
-    .light .entry {
-      background-color: #f0f0f0;
-      border-color: #ccc;
-    }
-    .theme-toggle {
-      float: right;
-      margin: 10px;
-    }
-    .timer {
-      font-size: 16px;
-      font-weight: bold;
+
+    .toggle {
+      margin-bottom: 20px;
     }
   </style>
 </head>
 <body>
-  <div class="theme-toggle">
-    <button onclick="toggleTheme()">Toggle Theme</button>
-  </div>
-  <div class="container">
-    <h1>🎮 DD Gaming Zone - System Tracker</h1>
+  <div id="app" class="theme-dark">
+    <div class="toggle">
+      <label for="themeToggle">🌗 Toggle Theme</label>
+      <input type="checkbox" id="themeToggle">
+    </div>
+
+    <h2>DD Gaming Zone - Player Registration</h2>
     <form id="entryForm">
-      <label>Name:</label>
-      <input type="text" id="name" required />
-
-      <label>Mobile Number:</label>
-      <input type="tel" id="mobile" required />
-
-      <label>Address:</label>
-      <input type="text" id="address" required />
-
-     <label for="system">System Allocated:</label>
-<select id="system" name="system" required>
-  <option value="">-- Select a System --</option>
-  <optgroup label="PCs">
-    <option value="PC-1">PC-1</option>
-    <option value="PC-2">PC-2</option>
-    <option value="PC-3">PC-3</option>
-    <option value="PC-4">PC-4</option>
-    <option value="PC-5">PC-5</option>
-    <option value="PC-6">PC-6</option>
-  </optgroup>
-  <optgroup label="PlayStations">
-    <option value="PS5-1">PS5-1</option>
-    <option value="PS5-2">PS5-2</option>
-  </optgroup>
-</select>
-
-
-      <label>Allocated Time (in minutes):</label>
-      <input type="number" id="allocatedTime" required />
-
-      <label>
-        <input type="checkbox" id="isChild" /> Is the user below 12 years?
+      <label>Name <input type="text" id="name" required /></label>
+      <label>Mobile Number <input type="tel" id="mobile" required /></label>
+      <label>Address <input type="text" id="address" required /></label>
+      <label>System Allocated
+        <select id="system">
+          <option value="PC-1">PC-1</option>
+          <option value="PC-2">PC-2</option>
+          <option value="PC-3">PC-3</option>
+          <option value="PC-4">PC-4</option>
+          <option value="PC-5">PC-5</option>
+          <option value="PC-6">PC-6</option>
+          <option value="PS5-1">PS5-1</option>
+          <option value="PS5-2">PS5-2</option>
+        </select>
       </label>
-
+      <label>Session Time (in minutes)
+        <input type="number" id="duration" min="1" value="60" required />
+      </label>
+      <label><input type="checkbox" id="isChild"> Below 12 Years</label>
       <button type="submit">Start Session</button>
     </form>
 
@@ -111,65 +95,55 @@
   </div>
 
   <script>
-    const form = document.getElementById("entryForm");
-    const entriesDiv = document.getElementById("entries");
-    const body = document.body;
+    const form = document.getElementById('entryForm');
+    const entriesDiv = document.getElementById('entries');
+    const themeToggle = document.getElementById('themeToggle');
+    const appDiv = document.getElementById('app');
 
-    function toggleTheme() {
-      body.classList.toggle("light");
-    }
+    themeToggle.addEventListener('change', () => {
+      appDiv.className = themeToggle.checked ? 'theme-light' : 'theme-dark';
+    });
 
-    function formatTime(seconds) {
-      const hrs = Math.floor(seconds / 3600);
-      const mins = Math.floor((seconds % 3600) / 60);
-      const secs = seconds % 60;
-      return `${hrs.toString().padStart(2, '0')}:${mins.toString().padStart(2, '0')}:${secs.toString().padStart(2, '0')}`;
-    }
-
-    function sendWhatsAppAlert(name, mobile, systemNumber, allocatedTime) {
-      const msg = `Hi Parent,\n\nYour child ${name} has exceeded the allocated gaming time of ${allocatedTime} minutes on System ${systemNumber}.\nPlease confirm if they can continue.\n\n- DD Gaming Zone`;
-      const encodedMsg = encodeURIComponent(msg);
-      const url = `https://wa.me/919966031085?text=${encodedMsg}`;
-      window.open(url, '_blank');
-    }
-
-    form.addEventListener("submit", (e) => {
+    form.addEventListener('submit', function(e) {
       e.preventDefault();
-      const name = document.getElementById("name").value;
-      const mobile = document.getElementById("mobile").value;
-      const address = document.getElementById("address").value;
-      const systemNumber = document.getElementById("systemNumber").value;
-      const allocatedTime = parseInt(document.getElementById("allocatedTime").value);
-      const isChild = document.getElementById("isChild").checked;
+      const name = document.getElementById('name').value;
+      const mobile = document.getElementById('mobile').value;
+      const address = document.getElementById('address').value;
+      const system = document.getElementById('system').value;
+      const duration = parseInt(document.getElementById('duration').value);
+      const isChild = document.getElementById('isChild').checked;
 
-      const entryId = `entry-${Date.now()}`;
-      const entryDiv = document.createElement("div");
-      entryDiv.classList.add("entry");
-      entryDiv.id = entryId;
-      entryDiv.innerHTML = `
-        <p><strong>${name}</strong> - System ${systemNumber}</p>
-        <p>Mobile: ${mobile}</p>
-        <p>Time Allocated: ${allocatedTime} min</p>
-        <p class="timer" id="timer-${entryId}">Timer: 00:00:00</p>
-      `;
-      entriesDiv.appendChild(entryDiv);
+      const endTime = Date.now() + duration * 60000;
 
-      let secondsElapsed = 0;
-      const interval = setInterval(() => {
-        secondsElapsed++;
-        const timerElement = document.getElementById(`timer-${entryId}`);
-        if (timerElement) {
-          timerElement.textContent = `Timer: ${formatTime(secondsElapsed)}`;
-        }
+      const entry = document.createElement('div');
+      entry.className = 'entry';
+      const timerId = `timer-${Date.now()}`;
 
-        if (secondsElapsed >= allocatedTime * 60) {
-          clearInterval(interval);
-          entryDiv.style.border = "2px solid red";
+      entry.innerHTML = `<strong>${name}</strong> on <strong>${system}</strong><br>
+        Time left: <span id="${timerId}"></span>`;
+
+      entriesDiv.appendChild(entry);
+
+      const timer = setInterval(() => {
+        const now = Date.now();
+        const remaining = endTime - now;
+
+        if (remaining <= 0) {
+          clearInterval(timer);
+          document.getElementById(timerId).textContent = '⏰ Time Over!';
+
           if (isChild) {
-            sendWhatsAppAlert(name, mobile, systemNumber, allocatedTime);
+            const message = `Child ${name} has exceeded allotted time on ${system}. Approve more time?`;
+            const encoded = encodeURIComponent(message);
+            window.open(`https://wa.me/919966031085?text=${encoded}`);
           } else {
-            alert(`${name}'s session time on System ${systemNumber} is over.`);
+            alert(`Time is up for ${name} on ${system}`);
           }
+        } else {
+          const hrs = Math.floor(remaining / 3600000);
+          const mins = Math.floor((remaining % 3600000) / 60000);
+          const secs = Math.floor((remaining % 60000) / 1000);
+          document.getElementById(timerId).textContent = `${hrs}h ${mins}m ${secs}s`;
         }
       }, 1000);
 
