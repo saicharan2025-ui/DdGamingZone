@@ -1,254 +1,237 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>DD Gaming Zone Tracker</title>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>DD Gaming Zone</title>
   <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@500&display=swap" rel="stylesheet">
   <style>
     :root {
-      --bg-light: #f4f4f4;
-      --text-light: #111;
-      --bg-dark: #121212;
-      --text-dark: #fff;
-      --accent: #ff9800;
+      --bg-dark: #0f0f0f;
+      --bg-light: #f2f2f2;
+      --text-dark: #ffffff;
+      --text-light: #000000;
+      --card-dark: #1f1f1f;
+      --card-light: #ffffff;
+    }
+
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
     }
 
     body {
-      margin: 0;
       font-family: 'Orbitron', sans-serif;
-      background: var(--bg-light) url('https://i.pinimg.com/736x/b0/cd/bd/b0cdbda5558cce6196f046b11f945c3b.jpg') no-repeat center center/cover;
-      color: var(--text-light);
-      transition: background 0.4s, color 0.4s;
-    }
-
-    body.dark {
       background-color: var(--bg-dark);
       color: var(--text-dark);
+      background-image: url('https://images.pexels.com/photos/1670977/pexels-photo-1670977.jpeg?cs=srgb&dl=pexels-francesco-ungaro-1670977.jpg&fm=jpg');
+      background-size: cover;
+      background-attachment: fixed;
+      background-position: center;
+      transition: background-color 0.3s, color 0.3s;
     }
 
     .container {
-      padding: 2rem;
-      max-width: 1200px;
+      max-width: 1000px;
       margin: auto;
+      padding: 2rem;
+      background-color: rgba(0, 0, 0, 0.7);
+      border-radius: 12px;
+      box-shadow: 0 0 10px rgba(255, 255, 255, 0.1);
     }
 
     h1 {
       text-align: center;
       margin-bottom: 1rem;
+      font-size: 2.2rem;
+      color: #00ffcc;
     }
 
-    .form-group {
-      margin-bottom: 1rem;
+    form {
+      display: grid;
+      gap: 1rem;
     }
 
-    label, input, select {
+    label {
       display: block;
-      width: 100%;
-      margin-top: 5px;
-      font-size: 1rem;
+      font-weight: bold;
     }
 
-    input[type="checkbox"] {
-      display: inline-block;
-      width: auto;
+    input, select, button {
+      padding: 0.5rem;
+      border-radius: 6px;
+      border: none;
+      font-size: 1rem;
     }
 
     button {
-      background: var(--accent);
-      color: white;
-      border: none;
-      padding: 0.7rem 1.2rem;
-      font-size: 1rem;
+      background-color: #00ffcc;
+      color: #000;
+      font-weight: bold;
       cursor: pointer;
-      margin-top: 1rem;
     }
 
-    #sessions {
+    .sessions {
       display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+      grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
       gap: 1rem;
       margin-top: 2rem;
     }
 
     .session-card {
-      background: rgba(255, 255, 255, 0.8);
-      padding: 1rem;
+      background-color: var(--card-dark);
       border-radius: 12px;
-      box-shadow: 0 0 12px rgba(0, 0, 0, 0.2);
-      position: relative;
-      transition: transform 0.4s, background 0.4s;
+      padding: 1rem;
+      transition: transform 0.3s ease, background-color 0.3s ease;
+      animation: fadeIn 0.5s ease;
     }
 
-    .session-card.dark {
-      background: rgba(20, 20, 20, 0.8);
+    .session-card.active {
+      border: 2px solid #00ffcc;
     }
 
-    .session-card.warning {
-      border: 3px solid red;
-      animation: pulse 1s infinite;
+    .session-card.red-alert {
+      background-color: #ff1a1a;
     }
 
-    @keyframes pulse {
-      0% { transform: scale(1); }
-      50% { transform: scale(1.05); }
-      100% { transform: scale(1); }
+    @keyframes fadeIn {
+      from {
+        opacity: 0;
+        transform: translateY(10px);
+      }
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
     }
 
-    .session-card h3 {
-      margin-top: 0;
-    }
+    @media screen and (max-width: 768px) {
+      .container {
+        padding: 1rem;
+      }
 
-    .card-buttons button {
-      margin-top: 0.5rem;
-      margin-right: 0.5rem;
-    }
+      h1 {
+        font-size: 1.5rem;
+      }
 
-    .theme-toggle {
-      position: absolute;
-      top: 10px;
-      right: 20px;
-      font-size: 1rem;
-      cursor: pointer;
+      input, select, button {
+        font-size: 0.9rem;
+      }
     }
   </style>
 </head>
+
 <body>
-  <div class="theme-toggle" onclick="toggleTheme()">🌗 Toggle Theme</div>
   <div class="container">
-    <h1>DD Gaming Zone Tracker 🎮</h1>
-    <form id="entryForm">
-      <div class="form-group">
-        <label>Name:</label>
-        <input type="text" id="name" required />
-      </div>
-      <div class="form-group">
-        <label>Mobile Number:</label>
-        <input type="text" id="mobile" required />
-      </div>
-      <div class="form-group">
-        <label>Address:</label>
-        <input type="text" id="address" required />
-      </div>
-      <div class="form-group">
-        <label>System Allocated:</label>
-        <select id="system">
-          <option>PC-1</option>
-          <option>PC-2</option>
-          <option>PC-3</option>
-          <option>PC-4</option>
-          <option>PC-5</option>
-          <option>PC-6</option>
-          <option>Console-1</option>
-          <option>Console-2</option>
-        </select>
-      </div>
-      <div class="form-group">
-        <label><input type="checkbox" id="isChild" /> Under 12 years</label>
-      </div>
-      <div class="form-group">
-        <label>Allocated Time (in minutes):</label>
-        <input type="number" id="allocatedTime" value="60" required />
-      </div>
+    <h1>DD Gaming Zone - Session Tracker</h1>
+    <form id="sessionForm">
+      <label for="name">Name:</label>
+      <input type="text" id="name" required>
+
+      <label for="mobile">Mobile Number:</label>
+      <input type="tel" id="mobile" pattern="[0-9]{10}" required>
+
+      <label for="address">Address:</label>
+      <input type="text" id="address" required>
+
+      <label for="system">System Allocated:</label>
+      <select id="system" required>
+        <option value="PC 1">PC 1</option>
+        <option value="PC 2">PC 2</option>
+        <option value="PC 3">PC 3</option>
+        <option value="PC 4">PC 4</option>
+        <option value="PC 5">PC 5</option>
+        <option value="PC 6">PC 6</option>
+        <option value="PS5 1">PlayStation 1</option>
+        <option value="PS5 2">PlayStation 2</option>
+      </select>
+
+      <label><input type="checkbox" id="isChild"> Is the player under 12 years?</label>
+
+      <label for="duration">Time Allocated (in minutes):</label>
+      <input type="number" id="duration" min="10" max="180" required>
+
       <button type="submit">Start Session</button>
     </form>
 
-    <div id="sessions"></div>
+    <div class="sessions" id="sessionsContainer"></div>
   </div>
 
-  <audio id="alarmSound" src="https://www.soundjay.com/buttons/sounds/beep-07.mp3"></audio>
-
   <script>
-    const sessionsDiv = document.getElementById("sessions");
-    const alarmSound = document.getElementById("alarmSound");
+    const form = document.getElementById('sessionForm');
+    const sessionsContainer = document.getElementById('sessionsContainer');
 
-    document.getElementById("entryForm").addEventListener("submit", function (e) {
+    form.addEventListener('submit', function (e) {
       e.preventDefault();
-      const name = document.getElementById("name").value;
-      const mobile = document.getElementById("mobile").value;
-      const address = document.getElementById("address").value;
-      const system = document.getElementById("system").value;
-      const isChild = document.getElementById("isChild").checked;
-      const allocatedTime = parseInt(document.getElementById("allocatedTime").value);
-      
-      const isConsole = system.includes("Console");
-      const price = isConsole ? 150 : 100;
 
-      const sessionCard = document.createElement("div");
-      sessionCard.classList.add("session-card");
-      sessionCard.innerHTML = `
-        <h3>${name} (${system})</h3>
-        <p>Mobile: ${mobile}</p>
-        <p>Address: ${address}</p>
-        <p>Time Left: <span class="timer">${allocatedTime}:00</span></p>
-        <p><strong>Amount to Pay: ₹${price}</strong></p>
-        <div class="card-buttons">
-          <button onclick="extendTime(this, ${allocatedTime})">+ Add 10 min</button>
-          <button onclick="closeSession(this)">Close</button>
-        </div>
+      const name = document.getElementById('name').value;
+      const mobile = document.getElementById('mobile').value;
+      const address = document.getElementById('address').value;
+      const system = document.getElementById('system').value;
+      const isChild = document.getElementById('isChild').checked;
+      const duration = parseInt(document.getElementById('duration').value);
+
+      const card = document.createElement('div');
+      card.classList.add('session-card', 'active');
+
+      const startTime = new Date();
+      const endTime = new Date(startTime.getTime() + duration * 60000);
+
+      card.innerHTML = `
+        <h3>${name}</h3>
+        <p><strong>System:</strong> ${system}</p>
+        <p><strong>Time:</strong> ${duration} min</p>
+        <p><strong>Mobile:</strong> ${mobile}</p>
+        <p><strong>Status:</strong> <span class="time-left">Running...</span></p>
+        <p><strong>Amount:</strong> ₹${system.includes('PC') ? '100' : '150'}</p>
+        <button class="extend">+10 min</button>
+        <button class="close">Mark as Completed</button>
       `;
 
-      sessionsDiv.appendChild(sessionCard);
-
-      let timeLeft = allocatedTime * 60;
-
-      const timer = setInterval(() => {
-        timeLeft--;
-        const mins = Math.floor(timeLeft / 60);
-        const secs = timeLeft % 60;
-        const timerDisplay = sessionCard.querySelector(".timer");
-        timerDisplay.textContent = `${String(mins).padStart(2, '0')}:${String(secs).padStart(2, '0')}`;
-
-        if (timeLeft <= allocatedTime * 6) {
-          sessionCard.classList.add("warning");
-        }
-
-        if (timeLeft <= 0) {
-          clearInterval(timer);
-          alarmSound.play();
-          if (isChild) {
-            alert(`🔔 Hi, We are from DD gaming Arena in Antilia - Shop No 10, Commercial complex area. You Child under 12 (${name}) has exceeded the allowed time. Approval needed.`);
-            console.log(`Mock WhatsApp sent to parent of ${name} at ${mobile}`);
-          }
-        }
-      }, 1000);
-    });
-
-    function extendTime(btn, prevTime) {
-      const card = btn.closest(".session-card");
-      const timerDisplay = card.querySelector(".timer").textContent;
-      let [m, s] = timerDisplay.split(":").map(Number);
-      let timeLeft = m * 60 + s + 600; // add 10 min
-      card.classList.remove("warning");
+      const timeLeftSpan = card.querySelector('.time-left');
 
       const interval = setInterval(() => {
-        timeLeft--;
-        const mins = Math.floor(timeLeft / 60);
-        const secs = timeLeft % 60;
-        card.querySelector(".timer").textContent = `${String(mins).padStart(2, '0')}:${String(secs).padStart(2, '0')}`;
-
-        if (timeLeft <= prevTime * 6) {
-          card.classList.add("warning");
-        }
+        const now = new Date();
+        const timeLeft = endTime - now;
 
         if (timeLeft <= 0) {
           clearInterval(interval);
-          alarmSound.play();
+          card.classList.remove('active');
+          timeLeftSpan.innerText = 'Time Up!';
+          playSound();
+        } else {
+          const mins = Math.floor(timeLeft / 60000);
+          const secs = Math.floor((timeLeft % 60000) / 1000);
+          timeLeftSpan.innerText = `${mins}m ${secs}s`;
+
+          if (timeLeft <= (duration * 6000)) {
+            card.classList.add('red-alert');
+          }
         }
       }, 1000);
-    }
 
-    function closeSession(btn) {
-      const card = btn.closest(".session-card");
-      card.remove();
-    }
+      card.querySelector('.close').onclick = () => {
+        clearInterval(interval);
+        card.remove();
+      };
 
-    function toggleTheme() {
-      document.body.classList.toggle("dark");
-      document.querySelectorAll(".session-card").forEach(card => {
-        card.classList.toggle("dark");
-      });
+      card.querySelector('.extend').onclick = () => {
+        endTime.setMinutes(endTime.getMinutes() + 10);
+        card.querySelector('.time-left').innerText += ' (Extended)';
+      };
+
+      sessionsContainer.appendChild(card);
+
+      form.reset();
+    });
+
+    function playSound() {
+      const beep = new Audio('https://actions.google.com/sounds/v1/alarms/alarm_clock.ogg');
+      beep.play();
     }
   </script>
 </body>
+
 </html>
