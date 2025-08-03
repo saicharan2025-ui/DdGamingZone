@@ -2,128 +2,202 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
-  <title>Dhwani Gaming Zone - Multi Child Timer</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>DD Gaming Zone - Player Tracker</title>
   <style>
     body {
       font-family: Arial, sans-serif;
-      background-color: #111;
-      color: #fff;
-      text-align: center;
-      padding: 30px;
+      margin: 0;
+      padding: 0;
+      background-color: var(--bg);
+      color: var(--text);
     }
 
-    #logo {
-      width: 120px;
-      margin-bottom: 20px;
+    :root.light {
+      --bg: #f9f9f9;
+      --card: #ffffff;
+      --text: #000000;
+      --accent: #4caf50;
+      --alert: #f44336;
+    }
+    :root.dark {
+      --bg: #121212;
+      --card: #1e1e1e;
+      --text: #ffffff;
+      --accent: #81c784;
+      --alert: #ef5350;
     }
 
-    .child-container {
-      background: #222;
+    header {
+      background-color: var(--card);
       padding: 20px;
-      margin: 10px auto;
-      border-radius: 12px;
-      width: 90%;
-      max-width: 400px;
-      box-shadow: 0 0 10px rgba(0,255,255,0.3);
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      box-shadow: 0 2px 5px rgba(0,0,0,0.1);
     }
 
-    button {
-      padding: 10px 15px;
-      margin: 5px;
-      background-color: #0ff;
+    .theme-toggle {
+      padding: 6px 12px;
+      background: var(--accent);
       border: none;
-      border-radius: 6px;
+      border-radius: 5px;
+      color: white;
       cursor: pointer;
-      color: #000;
+    }
+
+    main {
+      padding: 20px;
+    }
+
+    form, .dashboard {
+      background-color: var(--card);
+      padding: 20px;
+      margin-bottom: 20px;
+      border-radius: 10px;
+    }
+
+    input, select {
+      padding: 10px;
+      margin: 8px 0;
+      width: 100%;
+      border-radius: 5px;
+      border: 1px solid #ccc;
+    }
+
+    label {
       font-weight: bold;
     }
 
-    button:hover {
-      background-color: #0cc;
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      margin-top: 10px;
     }
 
-    input[type="text"] {
-      padding: 8px;
-      border-radius: 4px;
-      border: none;
+    th, td {
+      padding: 10px;
+      text-align: left;
+      border-bottom: 1px solid #ddd;
+    }
+
+    .alert {
+      color: var(--alert);
+      font-weight: bold;
     }
   </style>
 </head>
-<body>
-  <img id="logo" src="https://lh3.google.com/u/0/d/1FEW7lFZ9mDrJkuiDZ0G5w3_r8SYt0ekX=w3456-h1984-iv1?auditContext=forDisplay" alt="Dhwani Gaming Logo" />
-  <h1>Dhwani Gaming Zone - Session Tracker</h1>
+<body class="light">
+  <header>
+    <h1>🎮 DD Gaming Zone Tracker</h1>
+    <button class="theme-toggle" onclick="toggleTheme()">Toggle Theme</button>
+  </header>
+  <main>
+    <form id="entryForm">
+      <h2>New Player Entry</h2>
+      <label>Name:</label>
+      <input type="text" id="name" required />
+      <label>Mobile Number:</label>
+      <input type="tel" id="mobile" required />
+      <label>Address:</label>
+      <input type="text" id="address" required />
+      <label>System Number:</label>
+      <select id="system">
+        <option>System 1</option>
+        <option>System 2</option>
+        <option>System 3</option>
+        <option>System 4</option>
+        <option>System 5</option>
+        <option>System 6</option>
+      </select>
+      <label>Allocated Time (Minutes):</label>
+      <input type="number" id="allocatedTime" min="1" required />
+      <label><input type="checkbox" id="below12" /> Below 12 Years</label><br><br>
+      <button type="submit">Start Session</button>
+    </form>
 
-  <div>
-    <input type="text" id="childNameInput" placeholder="Enter child name" />
-    <button onclick="addChild()">Add Child</button>
-  </div>
-
-  <div id="childrenList"></div>
+    <div class="dashboard">
+      <h2>Active Sessions</h2>
+      <table id="sessionTable">
+        <thead>
+          <tr>
+            <th>Name</th>
+            <th>System</th>
+            <th>Time Elapsed</th>
+            <th>Time Left</th>
+            <th>Status</th>
+          </tr>
+        </thead>
+        <tbody id="sessionBody"></tbody>
+      </table>
+    </div>
+  </main>
 
   <script>
-    const children = {};
-    const parentCode = "DH123";
+    const sessionBody = document.getElementById("sessionBody");
+    const sessions = [];
 
-    function formatTime(seconds) {
-      const h = Math.floor(seconds / 3600).toString().padStart(2, '0');
-      const m = Math.floor((seconds % 3600) / 60).toString().padStart(2, '0');
-      const s = (seconds % 60).toString().padStart(2, '0');
-      return `${h}:${m}:${s}`;
-    }
+    document.getElementById("entryForm").addEventListener("submit", (e) => {
+      e.preventDefault();
+      const name = document.getElementById("name").value;
+      const mobile = document.getElementById("mobile").value;
+      const address = document.getElementById("address").value;
+      const system = document.getElementById("system").value;
+      const allocatedTime = parseInt(document.getElementById("allocatedTime").value);
+      const below12 = document.getElementById("below12").checked;
+      const startTime = new Date();
 
-    function addChild() {
-      const name = document.getElementById("childNameInput").value.trim();
-      if (!name || children[name]) return;
+      const entry = { name, mobile, address, system, allocatedTime, below12, startTime };
+      sessions.push(entry);
+      renderTable();
+    });
 
-      children[name] = {
-        time: 0,
-        interval: null,
-        extended: false
-      };
+    function renderTable() {
+      sessionBody.innerHTML = "";
+      sessions.forEach((session, index) => {
+        const now = new Date();
+        const elapsed = Math.floor((now - session.startTime) / 1000); // in sec
+        const remaining = Math.max(0, (session.allocatedTime * 60) - elapsed);
+        const timeElapsed = formatTime(elapsed);
+        const timeLeft = formatTime(remaining);
+        let status = "🟢 Running";
 
-      const container = document.createElement("div");
-      container.className = "child-container";
-      container.id = `child-${name}`;
-
-      container.innerHTML = `
-        <h3>${name}</h3>
-        <p id="timer-${name}">Session: 00:00:00</p>
-        <button onclick="startTimer('${name}')">Start</button>
-        <button onclick="stopTimer('${name}')">Stop</button>
-      `;
-
-      document.getElementById("childrenList").appendChild(container);
-      document.getElementById("childNameInput").value = "";
-    }
-
-    function startTimer(name) {
-      if (children[name].interval) return;
-
-      children[name].interval = setInterval(() => {
-        children[name].time++;
-        document.getElementById(`timer-${name}`).innerText = `Session: ${formatTime(children[name].time)}`;
-
-        if (children[name].time === 10 && !children[name].extended) {
-          stopTimer(name);
-          const code = prompt(`2-hour limit reached for ${name}. Enter parent approval code to continue:`);
-          if (code === parentCode) {
-            children[name].extended = true;
-            startTimer(name); // Resume
-          } else {
-            alert("Access Denied. Session ended.");
+        if (remaining === 0) {
+          status = "🔴 Time Up";
+          if (session.below12) {
+            console.log(`Send WhatsApp to ${session.mobile}: Your child has exceeded their playtime.`);
           }
         }
 
-        if (children[name].extended && children[name].time === 10800) {
-          stopTimer(name);
-          alert(`${name}'s session completed (3 hours total).`);
-        }
-      }, 1000); // 1 second
+        const row = `<tr>
+          <td>${session.name}</td>
+          <td>${session.system}</td>
+          <td>${timeElapsed}</td>
+          <td>${timeLeft}</td>
+          <td class="${remaining === 0 ? 'alert' : ''}">${status}</td>
+        </tr>`;
+        sessionBody.innerHTML += row;
+      });
     }
 
-    function stopTimer(name) {
-      clearInterval(children[name].interval);
-      children[name].interval = null;
+    function formatTime(seconds) {
+      const h = Math.floor(seconds / 3600);
+      const m = Math.floor((seconds % 3600) / 60);
+      const s = seconds % 60;
+      return `${String(h).padStart(2,'0')}:${String(m).padStart(2,'0')}:${String(s).padStart(2,'0')}`;
+    }
+
+    setInterval(renderTable, 1000);
+
+    function toggleTheme() {
+      const body = document.body;
+      if (body.classList.contains("light")) {
+        body.classList.remove("light");
+        body.classList.add("dark");
+      } else {
+        body.classList.remove("dark");
+        body.classList.add("light");
+      }
     }
   </script>
 </body>
