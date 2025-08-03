@@ -64,6 +64,13 @@
     const children = {};
     const parentCode = "DH123";
 
+    function formatTime(seconds) {
+      const h = Math.floor(seconds / 3600).toString().padStart(2, '0');
+      const m = Math.floor((seconds % 3600) / 60).toString().padStart(2, '0');
+      const s = (seconds % 60).toString().padStart(2, '0');
+      return `${h}:${m}:${s}`;
+    }
+
     function addChild() {
       const name = document.getElementById("childNameInput").value.trim();
       if (!name || children[name]) return;
@@ -80,7 +87,7 @@
 
       container.innerHTML = `
         <h3>${name}</h3>
-        <p id="timer-${name}">Session: 0 mins</p>
+        <p id="timer-${name}">Session: 00:00:00</p>
         <button onclick="startTimer('${name}')">Start</button>
         <button onclick="stopTimer('${name}')">Stop</button>
       `;
@@ -94,12 +101,10 @@
 
       children[name].interval = setInterval(() => {
         children[name].time++;
-        document.getElementById(`timer-${name}`).innerText = `Session: ${children[name].time} mins`;
+        document.getElementById(`timer-${name}`).innerText = `Session: ${formatTime(children[name].time)}`;
 
-        if (children[name].time === 120 && !children[name].extended) {
-          clearInterval(children[name].interval);
-          children[name].interval = null;
-
+        if (children[name].time === 7200 && !children[name].extended) {
+          stopTimer(name);
           const code = prompt(`2-hour limit reached for ${name}. Enter parent approval code to continue:`);
           if (code === parentCode) {
             children[name].extended = true;
@@ -109,11 +114,11 @@
           }
         }
 
-        if (children[name].extended && children[name].time === 180) {
+        if (children[name].extended && children[name].time === 10800) {
           stopTimer(name);
           alert(`${name}'s session completed (3 hours total).`);
         }
-      }, 60000); // 1 min
+      }, 1000); // 1 second
     }
 
     function stopTimer(name) {
