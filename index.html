@@ -2,94 +2,123 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Parental Approval - Dhwani Gaming</title>
+  <title>Dhwani Gaming Zone - Multi Child Timer</title>
   <style>
     body {
-      font-family: 'Segoe UI', sans-serif;
-      background-color: #0d0d0d;
+      font-family: Arial, sans-serif;
+      background-color: #111;
       color: #fff;
       text-align: center;
-      padding: 40px;
+      padding: 30px;
     }
-    .logo {
-      max-width: 180px;
+
+    #logo {
+      width: 120px;
       margin-bottom: 20px;
     }
-    .timer {
-      font-size: 2rem;
-      margin: 20px 0;
+
+    .child-container {
+      background: #222;
+      padding: 20px;
+      margin: 10px auto;
+      border-radius: 12px;
+      width: 90%;
+      max-width: 400px;
+      box-shadow: 0 0 10px rgba(0,255,255,0.3);
     }
-    .btn {
-      padding: 10px 20px;
-      font-size: 1rem;
-      margin: 10px;
-      background-color: #1e90ff;
+
+    button {
+      padding: 10px 15px;
+      margin: 5px;
+      background-color: #0ff;
       border: none;
-      border-radius: 5px;
-      color: white;
+      border-radius: 6px;
       cursor: pointer;
+      color: #000;
+      font-weight: bold;
     }
-    .btn:hover {
-      background-color: #0066cc;
+
+    button:hover {
+      background-color: #0cc;
     }
-    #approvalSection {
-      display: none;
-      margin-top: 20px;
-    }
+
     input[type="text"] {
-      padding: 10px;
-      font-size: 1rem;
-      width: 200px;
-      border-radius: 5px;
+      padding: 8px;
+      border-radius: 4px;
       border: none;
-      margin-right: 10px;
     }
   </style>
 </head>
 <body>
-  <img src="https://lh3.google.com/u/0/d/1FEW7lFZ9mDrJkuiDZ0G5w3_r8SYt0ekX=w3456-h1984-iv1?auditContext=forDisplay" alt="Dhwani Gaming Logo" class="logo">
-  <h1>🎮 Dhwani Gaming - Parental Approval System</h1>
+  <img id="logo" src="https://lh3.google.com/u/0/d/1FEW7lFZ9mDrJkuiDZ0G5w3_r8SYt0ekX=w3456-h1984-iv1?auditContext=forDisplay" alt="Dhwani Gaming Logo" />
+  <h1>Dhwani Gaming Zone - Session Tracker</h1>
 
-  <div class="timer" id="timerDisplay">Session: 0 hrs 0 mins</div>
-  <button class="btn" onclick="startSession()">Start Gaming Session</button>
-
-  <div id="approvalSection">
-    <p>⏳ You've reached the 2 hour limit! Parent approval needed to continue.</p>
-    <input type="text" id="parentCode" placeholder="Enter Parent Code">
-    <button class="btn" onclick="approveExtension()">Approve</button>
+  <div>
+    <input type="text" id="childNameInput" placeholder="Enter child name" />
+    <button onclick="addChild()">Add Child</button>
   </div>
 
+  <div id="childrenList"></div>
+
   <script>
-    let sessionMinutes = 0;
-    let timer;
+    const children = {};
+    const parentCode = "DH123";
 
-    function startSession() {
-      if (timer) clearInterval(timer);
-      timer = setInterval(updateTimer, 60000);
+    function addChild() {
+      const name = document.getElementById("childNameInput").value.trim();
+      if (!name || children[name]) return;
+
+      children[name] = {
+        time: 0,
+        interval: null,
+        extended: false
+      };
+
+      const container = document.createElement("div");
+      container.className = "child-container";
+      container.id = `child-${name}`;
+
+      container.innerHTML = `
+        <h3>${name}</h3>
+        <p id="timer-${name}">Session: 0 mins</p>
+        <button onclick="startTimer('${name}')">Start</button>
+        <button onclick="stopTimer('${name}')">Stop</button>
+      `;
+
+      document.getElementById("childrenList").appendChild(container);
+      document.getElementById("childNameInput").value = "";
     }
 
-    function updateTimer() {
-      sessionMinutes++;
-      const hrs = Math.floor(sessionMinutes / 60);
-      const mins = sessionMinutes % 60;
-      document.getElementById("timerDisplay").textContent = `Session: ${hrs} hrs ${mins} mins`;
-      
-      if (sessionMinutes === 120) {
-        clearInterval(timer);
-        document.getElementById("approvalSection").style.display = "block";
-      }
+    function startTimer(name) {
+      if (children[name].interval) return;
+
+      children[name].interval = setInterval(() => {
+        children[name].time++;
+        document.getElementById(`timer-${name}`).innerText = `Session: ${children[name].time} mins`;
+
+        if (children[name].time === 120 && !children[name].extended) {
+          clearInterval(children[name].interval);
+          children[name].interval = null;
+
+          const code = prompt(`2-hour limit reached for ${name}. Enter parent approval code to continue:`);
+          if (code === parentCode) {
+            children[name].extended = true;
+            startTimer(name); // Resume
+          } else {
+            alert("Access Denied. Session ended.");
+          }
+        }
+
+        if (children[name].extended && children[name].time === 180) {
+          stopTimer(name);
+          alert(`${name}'s session completed (3 hours total).`);
+        }
+      }, 60000); // 1 min
     }
 
-    function approveExtension() {
-      const code = document.getElementById("parentCode").value;
-      if (code === "DH123") {
-        alert("✅ Approved! 1 hour extended.");
-        document.getElementById("approvalSection").style.display = "none";
-        timer = setInterval(updateTimer, 60000);
-      } else {
-        alert("❌ Invalid code. Please check with a parent.");
-      }
+    function stopTimer(name) {
+      clearInterval(children[name].interval);
+      children[name].interval = null;
     }
   </script>
 </body>
