@@ -79,8 +79,23 @@
       <label>Address:</label>
       <input type="text" id="address" required />
 
-      <label>Allotted System Number:</label>
-      <input type="number" id="systemNumber" required />
+     <label for="system">System Allocated:</label>
+<select id="system" name="system" required>
+  <option value="">-- Select a System --</option>
+  <optgroup label="PCs">
+    <option value="PC-1">PC-1</option>
+    <option value="PC-2">PC-2</option>
+    <option value="PC-3">PC-3</option>
+    <option value="PC-4">PC-4</option>
+    <option value="PC-5">PC-5</option>
+    <option value="PC-6">PC-6</option>
+  </optgroup>
+  <optgroup label="PlayStations">
+    <option value="PS5-1">PS5-1</option>
+    <option value="PS5-2">PS5-2</option>
+  </optgroup>
+</select>
+
 
       <label>Allocated Time (in minutes):</label>
       <input type="number" id="allocatedTime" required />
