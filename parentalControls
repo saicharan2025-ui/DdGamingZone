@@ -1,0 +1,96 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Parental Approval - Dhwani Gaming</title>
+  <style>
+    body {
+      font-family: 'Segoe UI', sans-serif;
+      background-color: #0d0d0d;
+      color: #fff;
+      text-align: center;
+      padding: 40px;
+    }
+    .logo {
+      max-width: 180px;
+      margin-bottom: 20px;
+    }
+    .timer {
+      font-size: 2rem;
+      margin: 20px 0;
+    }
+    .btn {
+      padding: 10px 20px;
+      font-size: 1rem;
+      margin: 10px;
+      background-color: #1e90ff;
+      border: none;
+      border-radius: 5px;
+      color: white;
+      cursor: pointer;
+    }
+    .btn:hover {
+      background-color: #0066cc;
+    }
+    #approvalSection {
+      display: none;
+      margin-top: 20px;
+    }
+    input[type="text"] {
+      padding: 10px;
+      font-size: 1rem;
+      width: 200px;
+      border-radius: 5px;
+      border: none;
+      margin-right: 10px;
+    }
+  </style>
+</head>
+<body>
+  <img src="dhwani_logo.png" alt="Dhwani Gaming Logo" class="logo">
+  <h1>🎮 Dhwani Gaming - Parental Approval System</h1>
+
+  <div class="timer" id="timerDisplay">Session: 0 hrs 0 mins</div>
+  <button class="btn" onclick="startSession()">Start Gaming Session</button>
+
+  <div id="approvalSection">
+    <p>⏳ You've reached the 2 hour limit! Parent approval needed to continue.</p>
+    <input type="text" id="parentCode" placeholder="Enter Parent Code">
+    <button class="btn" onclick="approveExtension()">Approve</button>
+  </div>
+
+  <script>
+    let sessionMinutes = 0;
+    let timer;
+
+    function startSession() {
+      if (timer) clearInterval(timer);
+      timer = setInterval(updateTimer, 60000);
+    }
+
+    function updateTimer() {
+      sessionMinutes++;
+      const hrs = Math.floor(sessionMinutes / 60);
+      const mins = sessionMinutes % 60;
+      document.getElementById("timerDisplay").textContent = `Session: ${hrs} hrs ${mins} mins`;
+      
+      if (sessionMinutes === 120) {
+        clearInterval(timer);
+        document.getElementById("approvalSection").style.display = "block";
+      }
+    }
+
+    function approveExtension() {
+      const code = document.getElementById("parentCode").value;
+      if (code === "DH123") {
+        alert("✅ Approved! 1 hour extended.");
+        document.getElementById("approvalSection").style.display = "none";
+        timer = setInterval(updateTimer, 60000);
+      } else {
+        alert("❌ Invalid code. Please check with a parent.");
+      }
+    }
+  </script>
+</body>
+</html>
