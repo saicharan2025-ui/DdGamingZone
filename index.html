@@ -127,7 +127,7 @@
       if (!data.isChild) data.isChild = false;
 
       try {
-        const res = await fetch("/api/start-session", {
+        const res = await fetch("/api/save-session", {
           method: "POST",
           headers: { "Content-Type": "application/json" },
           body: JSON.stringify(data),
