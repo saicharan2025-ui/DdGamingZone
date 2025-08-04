@@ -29,6 +29,10 @@ const sessionSchema = new mongoose.Schema({
     type: Date,
     default: Date.now
   },
+   endTime: {
+    type: Date,
+    default: Date.now
+  },
   isActive: {
     type: Boolean,
     default: true
