@@ -1,33 +1,54 @@
-require('dotenv').config();
+// server.js
 const express = require('express');
 const mongoose = require('mongoose');
-const cors = require('cors');
+const path = require('path');
 const app = express();
+const PORT = process.env.PORT || 3000;
 
-app.use(cors());
-app.use(express.json());
+// MongoDB connection
+mongoose.connect(process.env.MONGO_URI, {
+  useNewUrlParser: true,
+  useUnifiedTopology: true
+}).then(() => console.log("✅ MongoDB connected"))
+  .catch(err => console.error("❌ MongoDB connection error:", err));
 
-mongoose.connect(process.env.MONGO_URI)
-  .then(() => console.log('MongoDB connected'))
-  .catch((err) => console.error(err));
-
-const sessionSchema = new mongoose.Schema({
+// Define schema
+const SessionSchema = new mongoose.Schema({
   name: String,
   mobile: String,
   address: String,
-  system: String,
+  systemNumber: String,
   isChild: Boolean,
-  duration: Number,
-  startTime: { type: Date, default: Date.now }
+  startTime: Date,
+  durationMinutes: Number,
+  sessionType: String, // PC or PS
+  amount: Number
 });
 
-const Session = mongoose.model('Session', sessionSchema);
+const Session = mongoose.model("Session", SessionSchema);
 
-app.post('/api/start-session', async (req, res) => {
-  const newSession = new Session(req.body);
-  await newSession.save();
-  res.json({ message: 'Session started', session: newSession });
+// Middlewares
+app.use(express.json());
+app.use(express.static(path.join(__dirname))); // Serve static files (HTML/CSS/JS)
+
+// API to save session
+app.post('/api/saveSession', async (req, res) => {
+  try {
+    const session = new Session(req.body);
+    await session.save();
+    res.status(201).json({ success: true, message: "Session saved!" });
+  } catch (err) {
+    console.error("Error saving session:", err);
+    res.status(500).json({ success: false, error: "Internal Server Error" });
+  }
 });
 
-const PORT = process.env.PORT || 5000;
-app.listen(PORT, () => console.log(`Server running on port ${PORT}`));
+// Serve frontend fallback
+app.get('*', (req, res) => {
+  res.sendFile(path.join(__dirname, 'index.html'));
+});
+
+// Start server
+app.listen(PORT, () => {
+  console.log(`🚀 Server running at http://localhost:${PORT}`);
+});
