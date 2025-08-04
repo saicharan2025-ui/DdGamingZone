@@ -1,54 +1,55 @@
-// server.js
 const express = require('express');
 const mongoose = require('mongoose');
-const path = require('path');
+const cors = require('cors');
+require('dotenv').config(); // Load environment variables
 const app = express();
 const PORT = process.env.PORT || 3000;
 
-// MongoDB connection
-mongoose.connect(process.env.MONGO_URI, {
-  useNewUrlParser: true,
-  useUnifiedTopology: true
-}).then(() => console.log("✅ MongoDB connected"))
-  .catch(err => console.error("❌ MongoDB connection error:", err));
+// Middleware
+app.use(cors());
+app.use(express.json());
 
-// Define schema
-const SessionSchema = new mongoose.Schema({
+// Mongoose Schema and Model (defined inline)
+const sessionSchema = new mongoose.Schema({
   name: String,
   mobile: String,
   address: String,
-  systemNumber: String,
+  systemNumber: Number,
   isChild: Boolean,
   startTime: Date,
-  durationMinutes: Number,
-  sessionType: String, // PC or PS
-  amount: Number
+  endTime: Date,
+  platform: String,
+  paymentAmount: Number,
+  parentAlertSent: Boolean,
 });
+const Session = mongoose.model('Session', sessionSchema);
 
-const Session = mongoose.model("Session", SessionSchema);
+// MongoDB Connection
+mongoose.connect(process.env.MONGO_URI, {
+  useNewUrlParser: true,
+  useUnifiedTopology: true,
+})
+.then(() => console.log('✅ MongoDB connected'))
+.catch(err => console.error('❌ MongoDB connection error:', err));
 
-// Middlewares
-app.use(express.json());
-app.use(express.static(path.join(__dirname))); // Serve static files (HTML/CSS/JS)
-
-// API to save session
-app.post('/api/saveSession', async (req, res) => {
+// POST Route to Save Session Data
+app.post('/api/sessions', async (req, res) => {
   try {
-    const session = new Session(req.body);
-    await session.save();
-    res.status(201).json({ success: true, message: "Session saved!" });
-  } catch (err) {
-    console.error("Error saving session:", err);
-    res.status(500).json({ success: false, error: "Internal Server Error" });
+    const newSession = new Session(req.body);
+    await newSession.save();
+    res.status(201).json({ message: 'Session saved successfully!' });
+  } catch (error) {
+    console.error('❌ Error saving session:', error);
+    res.status(500).json({ message: 'Failed to save session' });
   }
 });
 
-// Serve frontend fallback
-app.get('*', (req, res) => {
-  res.sendFile(path.join(__dirname, 'index.html'));
+// Health Check Route
+app.get('/', (req, res) => {
+  res.send('🎮 Gaming Zone Backend is Live');
 });
 
-// Start server
+// Start Server
 app.listen(PORT, () => {
-  console.log(`🚀 Server running at http://localhost:${PORT}`);
+  console.log(`🚀 Server running on port ${PORT}`);
 });
