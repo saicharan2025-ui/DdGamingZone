@@ -119,8 +119,11 @@
   try {
     const res = await fetch('/api/get-sessions');
     const data = await res.json();
-    const today = new Date().toISOString().slice(0, 10);
-    const todaySessions = data.filter(session => session.startTime.slice(0, 10) === today);
+    const today = new Date();
+const todaySessions = data.filter(session => {
+  const start = new Date(session.startTime);
+  return start.toDateString() === today.toDateString();
+});
 
     const tableBody = document.querySelector('#sessionsTable tbody');
     tableBody.innerHTML = '';
@@ -169,7 +172,7 @@
           const now = new Date();
           const durationMinutes = Math.floor((now - start) / 60000);
           const durationHours = (durationMinutes / 60).toFixed(2);
-          const isConsole = session.systemNumber.toLowerCase().includes('console');
+          const isConsole = session.systemNumber.toLowerCase().includes('ps');
           const rate = isConsole ? 150 : 100;
           const amount = (rate * durationHours).toFixed(2);
 
