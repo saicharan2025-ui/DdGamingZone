@@ -52,6 +52,23 @@ app.get("/api/today-sessions", async (req, res) => {
   }
 });
 
+const Session = require("./models/Session"); // Ensure this line is at the top if not already
+
+// Get sessions for today or past days
+app.get("/api/get-sessions", async (req, res) => {
+  try {
+    const days = parseInt(req.query.days || "1");
+    const fromDate = new Date();
+    fromDate.setDate(fromDate.getDate() - days);
+
+    const sessions = await Session.find({ createdAt: { $gte: fromDate } }).sort({ createdAt: -1 });
+    res.json({ sessions });
+  } catch (error) {
+    console.error("Error fetching sessions:", error);
+    res.status(500).json({ message: "Server Error" });
+  }
+});
+
 
 // Serve index.html on root
 app.get("/", (req, res) => {
