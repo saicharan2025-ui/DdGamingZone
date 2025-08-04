@@ -116,44 +116,46 @@
     });
 
     async function fetchSessions() {
-      try {
-        const res = await fetch('/api/get-sessions');
-        const data = await res.json();
-        const today = new Date().toISOString().slice(0, 10);
-        const todaySessions = data.filter(session => session.startTime.slice(0, 10) === today);
+  try {
+    const res = await fetch('/api/get-sessions');
+    const data = await res.json();
+    const today = new Date().toISOString().slice(0, 10);
+    const todaySessions = data.filter(session => session.startTime.slice(0, 10) === today);
 
-        const tableBody = document.querySelector('#sessionsTable tbody');
-        tableBody.innerHTML = '';
-        let totalAmount = 0;
+    const tableBody = document.querySelector('#sessionsTable tbody');
+    tableBody.innerHTML = '';
+    let totalAmount = 0;
 
-       todaySessions.forEach((session, index) => {
-  const start = new Date(session.startTime);
-  const durationHours = (session.duration / 60).toFixed(2);
-  const isConsole = session.systemNumber.toLowerCase().includes('ps'); // Check for PS
-  const ratePerHour = isConsole ? 150 : 100;
-  const hoursUsed = Math.ceil(session.duration / 60); // Round up
-  const amount = ratePerHour * hoursUsed;
+    todaySessions.forEach((session, index) => {
+      const start = new Date(session.startTime);
+      const durationHours = (session.duration / 60).toFixed(2);
 
-  totalAmount += amount;
+      const isConsole = session.systemNumber.toLowerCase().includes('ps'); // Fix: match PS1, PS2
+      const ratePerHour = isConsole ? 150 : 100;
+      const hoursUsed = Math.ceil(session.duration / 60);
+      const amount = ratePerHour * hoursUsed;
 
-  const row = document.createElement('tr');
-  row.innerHTML = `
-    <td>${index + 1}</td>
-    <td>${session.name}</td>
-    <td>${session.mobile}</td>
-    <td>${session.address}</td>
-    <td>${session.systemNumber}</td>
-    <td>${durationHours} hrs</td>
-    <td>₹${amount}</td>
-    <td>${start.toLocaleTimeString()}</td>
-  `;
-  tableBody.appendChild(row);
-});
-        document.getElementById('totalAmount').innerHTML = `Total Amount Earned Today: ₹${totalAmount.toFixed(2)}`;
-      } catch (err) {
-        console.error("Failed to fetch sessions", err);
-      }
-    }
+      totalAmount += amount;
+
+      const row = document.createElement('tr');
+      row.innerHTML = `
+        <td>${index + 1}</td>
+        <td>${session.name}</td>
+        <td>${session.mobile}</td>
+        <td>${session.address}</td>
+        <td>${session.systemNumber}</td>
+        <td>${durationHours} hrs</td>
+        <td>₹${amount}</td>
+        <td>${start.toLocaleTimeString()}</td>
+      `;
+      tableBody.appendChild(row);
+    });
+
+    document.getElementById('totalAmount').innerHTML = `Total Amount Earned Today: ₹${totalAmount.toFixed(2)}`;
+  } catch (err) {
+    console.error("Failed to fetch sessions", err);
+  }
+}
 
     async function fetchActiveSessions() {
       try {
