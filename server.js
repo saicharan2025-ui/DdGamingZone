@@ -32,9 +32,10 @@ app.post('/api/start-session', async (req, res) => {
       mobile: req.body.mobile,
       address: req.body.address,
       systemNumber: req.body.systemNumber,
-      isChild: req.body.isChild,//
+      isChild: req.body.isChild,
       allocatedMinutes: req.body.allocatedMinutes,
-      isActive: true
+      isActive: true,
+      startTime: new Date()
     };
 
     const session = new Session(sessionData);
@@ -46,7 +47,6 @@ app.post('/api/start-session', async (req, res) => {
     res.status(500).json({ error: 'Failed to save session' });
   }
 });
-
 
 // Get today's sessions
 app.get("/api/today-sessions", async (req, res) => {
@@ -70,7 +70,7 @@ app.get("/api/get-sessions", async (req, res) => {
     fromDate.setDate(fromDate.getDate() - days);
 
     const sessions = await Session.find({ createdAt: { $gte: fromDate } }).sort({ createdAt: -1 });
-    res.json(sessions); // 🛠️ Return just the array
+    res.json(sessions);
   } catch (error) {
     console.error("Error fetching sessions:", error);
     res.status(500).json({ message: "Server Error" });
@@ -88,7 +88,7 @@ app.get("/api/active-sessions", async (req, res) => {
   }
 });
 
-// End a session
+// End a session (style 1 - sessionId in body)
 app.post('/api/end-session', async (req, res) => {
   try {
     const { sessionId } = req.body;
@@ -101,10 +101,7 @@ app.post('/api/end-session', async (req, res) => {
     const now = new Date();
     session.endTime = now;
     session.isActive = false;
-
-    const durationMs = now - session.startTime;
-    const durationInMinutes = Math.ceil(durationMs / 60000);
-    session.duration = durationInMinutes;
+    session.duration = Math.ceil((now - session.startTime) / 60000);
 
     await session.save();
 
@@ -115,6 +112,28 @@ app.post('/api/end-session', async (req, res) => {
   }
 });
 
+// End a session (style 2 - sessionId in URL)
+app.post('/api/end-session/:id', async (req, res) => {
+  try {
+    const session = await Session.findById(req.params.id);
+
+    if (!session) {
+      return res.status(404).json({ error: 'Session not found' });
+    }
+
+    const now = new Date();
+    session.endTime = now;
+    session.isActive = false;
+    session.duration = Math.ceil((now - session.startTime) / 60000);
+
+    await session.save();
+
+    res.json({ message: 'Session ended successfully', session });
+  } catch (error) {
+    console.error('Error ending session:', error);
+    res.status(500).json({ error: 'Failed to end session' });
+  }
+});
 
 // Serve index.html on root
 app.get("/", (req, res) => {
