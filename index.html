@@ -180,30 +180,62 @@
   <audio id="alertSound" src="https://cdn.pixabay.com/audio/2021/09/20/audio_04b84c3a74.mp3"></audio>
 
   <script>
+    <script>
+  document.addEventListener("DOMContentLoaded", () => {
+    const form = document.getElementById("sessionForm");
     const cardsContainer = document.getElementById('cards');
     const alertSound = document.getElementById('alertSound');
 
-    function formatTime(seconds) {
+    const formatTime = (seconds) => {
       const h = Math.floor(seconds / 3600).toString().padStart(2, '0');
       const m = Math.floor((seconds % 3600) / 60).toString().padStart(2, '0');
       const s = (seconds % 60).toString().padStart(2, '0');
       return `${h}:${m}:${s}`;
-    }
+    };
 
-    document.getElementById('sessionForm').addEventListener('submit', function (e) {
+    form.addEventListener("submit", async (e) => {
       e.preventDefault();
-      const name = document.getElementById('name').value;
-      const mobile = document.getElementById('mobile').value;
-      const address = document.getElementById('address').value;
-      const system = document.getElementById('system').value;
-      const duration = parseInt(document.getElementById('duration').value);
-      const isChild = document.getElementById('isChild').checked;
 
+      const name = document.getElementById("name")?.value?.trim();
+      const mobile = document.getElementById("mobile")?.value?.trim();
+      const address = document.getElementById("address")?.value?.trim();
+      const system = document.getElementById("system")?.value?.trim();
+      const isChild = document.getElementById("isChild")?.checked;
+      const duration = parseInt(document.getElementById("duration")?.value);
+
+      if (!name || !mobile || !system || !duration) {
+        alert("Please fill in all required fields.");
+        return;
+      }
+
+      // Save to backend
+      try {
+        const res = await fetch("https://ddgamingzone.onrender.com/api/save-session", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({
+            name,
+            mobile,
+            address,
+            system,
+            isChild,
+            durationMinutes: duration,
+          }),
+        });
+
+        const result = await res.json();
+        alert(result.message || "Session saved");
+      } catch (err) {
+        console.error("Error:", err);
+        alert("Failed to save session.");
+      }
+
+      // Create card
       const card = document.createElement('div');
       card.classList.add('session-card');
-
       let remaining = duration * 60;
       const price = system.startsWith('PS') ? 150 : 100;
+
       const timerEl = document.createElement('div');
       const timerId = setInterval(() => {
         remaining--;
@@ -216,13 +248,12 @@
         if (remaining <= 0) {
           clearInterval(timerId);
           alertSound.play();
+
           if (isChild) {
             const confirmLink = `https://web.whatsapp.com/send?phone=91${mobile}&text=Time%20is%20up%20for%20${name}.%20Do%20you%20approve%20extended%20play?`;
             const childAlert = window.open(confirmLink, '_blank');
             setTimeout(() => {
-              if (!childAlert.closed) {
-                childAlert.close();
-              }
+              if (!childAlert.closed) childAlert.close();
               cardsContainer.removeChild(card);
             }, 5 * 60 * 1000);
           } else {
@@ -263,17 +294,8 @@
 
       cardsContainer.appendChild(card);
     });
-    <h2>Start Gaming Session</h2>
-<form id="sessionForm">
-  <input type="text" id="name" placeholder="Name" required /><br>
-  <input type="text" id="mobile" placeholder="Mobile" required /><br>
-  <input type="text" id="address" placeholder="Address" required /><br>
-  <input type="text" id="systemNumber" placeholder="System Number" required /><br>
-  <label><input type="checkbox" id="isChild" /> Below 12?</label><br>
-  <input type="number" id="duration" placeholder="Duration (minutes)" required /><br>
-  <button type="submit">Start Session</button>
-</form>
-
+  });
+</script>
   </script>
   <script>
   document.addEventListener("DOMContentLoaded", () => {
