@@ -1,274 +1,269 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>DD Gaming Zone Tracker</title>
-  <link href="https://fonts.googleapis.com/css2?family=Press+Start+2P&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" />
+  <title>DD Gaming Zone</title>
+  <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@500&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" />
   <style>
     :root {
-      --bg-light: #f9f9f9;
-      --bg-dark: #121212;
-      --card-light: #ffffff;
+      --bg-dark: #0e0e0e;
+      --bg-light: #f1f1f1;
       --card-dark: #1e1e1e;
-      --text-light: #000000;
+      --card-light: #ffffff;
       --text-dark: #ffffff;
-      --primary: #ff1744;
+      --text-light: #000000;
+      --accent-color: #f39c12;
     }
 
     body {
-      font-family: 'Press Start 2P', cursive;
       margin: 0;
-      background: var(--bg-light);
-      color: var(--text-light);
-      transition: background 0.3s, color 0.3s;
-    }
-
-    body.dark {
-      background: var(--bg-dark);
+      font-family: 'Orbitron', sans-serif;
+      background: var(--bg-dark) url('https://cdn.dribbble.com/userupload/6508147/file/original-11794da09cf2fda821918b0be52877cf.jpg?format=webp&resize=400x300&vertical=center') no-repeat center center fixed;
+      background-size: cover;
       color: var(--text-dark);
+      overflow-x: hidden;
     }
 
-    .container {
-      max-width: 1100px;
-      margin: auto;
-      padding: 1rem;
-    }
-
-    h1 {
+    header {
       text-align: center;
-      font-size: 1.5rem;
-      margin-bottom: 1rem;
-    }
-
-    .theme-toggle {
-      position: fixed;
-      top: 1rem;
-      right: 1rem;
-      background: var(--primary);
-      color: white;
-      border: none;
-      padding: 0.5rem 1rem;
-      border-radius: 5px;
-      cursor: pointer;
-    }
-
-    form {
-      background: var(--card-light);
       padding: 1rem;
-      border-radius: 10px;
-      margin-bottom: 2rem;
-      box-shadow: 0 4px 8px rgba(0,0,0,0.1);
-      transition: background 0.3s;
+      font-size: 2rem;
+      color: var(--accent-color);
+      text-shadow: 1px 1px 2px black;
     }
 
-    body.dark form {
-      background: var(--card-dark);
+    .form-container {
+      max-width: 800px;
+      margin: 0 auto;
+      background-color: rgba(0, 0, 0, 0.8);
+      padding: 1.5rem;
+      border-radius: 15px;
+      box-shadow: 0 0 20px #000;
     }
 
-    form label {
-      display: block;
-      margin-top: 1rem;
+    .form-group {
+      margin: 1rem 0;
+      display: flex;
+      flex-direction: column;
     }
 
-    form input, form select {
-      width: 100%;
+    label {
+      margin-bottom: 0.5rem;
+    }
+
+    input,
+    select {
       padding: 0.5rem;
+      border-radius: 8px;
+      border: none;
       font-size: 1rem;
-      margin-top: 0.5rem;
     }
 
-    .sessions {
-      display: grid;
-      grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+    button {
+      padding: 0.7rem 1.2rem;
+      background: var(--accent-color);
+      color: black;
+      border: none;
+      border-radius: 10px;
+      font-size: 1rem;
+      cursor: pointer;
+      transition: background 0.3s ease;
+    }
+
+    button:hover {
+      background: #e67e22;
+    }
+
+    .cards-container {
+      display: flex;
+      flex-wrap: wrap;
       gap: 1rem;
+      margin: 2rem auto;
+      justify-content: center;
     }
 
-    .card {
-      background: var(--card-light);
+    .session-card {
+      width: 250px;
+      background-color: var(--card-dark);
+      border-radius: 15px;
       padding: 1rem;
-      border-radius: 12px;
-      box-shadow: 0 6px 12px rgba(0,0,0,0.2);
-      transition: transform 0.4s ease, background 0.3s;
+      color: white;
+      box-shadow: 0 0 15px rgba(0, 0, 0, 0.7);
+      transition: transform 0.3s, box-shadow 0.3s;
       position: relative;
     }
 
-    body.dark .card {
-      background: var(--card-dark);
+    .session-card:hover {
+      transform: scale(1.05);
+      box-shadow: 0 0 25px var(--accent-color);
     }
 
-    .card.warning {
-      border: 3px solid orange;
+    .alert-red {
+      background: rgba(255, 0, 0, 0.8) !important;
     }
 
-    .card.danger {
-      border: 3px solid red;
-      background: #ffebee;
-    }
-
-    .card h3 {
-      margin-top: 0;
-    }
-
-    .card .actions {
-      margin-top: 1rem;
-    }
-
-    .card .actions button {
-      margin-right: 0.5rem;
-      padding: 0.3rem 0.6rem;
-      font-size: 0.8rem;
-      cursor: pointer;
-      border: none;
-      border-radius: 5px;
-    }
-
-    .card .actions .extend {
-      background: #4caf50;
-      color: white;
-    }
-
-    .card .actions .close {
-      background: #f44336;
-      color: white;
-    }
-
-    .icon {
+    .session-icon {
       font-size: 2rem;
-      margin-right: 0.5rem;
+      margin-bottom: 1rem;
+      color: var(--accent-color);
+    }
+
+    .card-actions {
+      margin-top: 1rem;
+      display: flex;
+      justify-content: space-between;
+    }
+
+    @media screen and (max-width: 768px) {
+      body {
+        background-attachment: scroll;
+      }
+      .form-container {
+        margin: 1rem;
+      }
+      .cards-container {
+        flex-direction: column;
+        align-items: center;
+      }
     }
   </style>
 </head>
+
 <body>
-  <button class="theme-toggle" onclick="toggleTheme()">Toggle Theme</button>
-  <div class="container">
-    <h1>🎮 DD Gaming Zone Registry</h1>
-    <form id="entryForm">
-      <label>Name:
-        <input type="text" id="name" required />
-      </label>
-      <label>Mobile:
-        <input type="tel" id="mobile" required />
-      </label>
-      <label>Address:
-        <input type="text" id="address" required />
-      </label>
-      <label>System Type:
+  <header>
+    🎮 DD Gaming Zone - Player Entry & Session Tracker
+  </header>
+
+  <div class="form-container">
+    <form id="sessionForm">
+      <div class="form-group">
+        <label>Name:</label>
+        <input type="text" id="name" required>
+      </div>
+      <div class="form-group">
+        <label>Mobile Number:</label>
+        <input type="tel" id="mobile" required>
+      </div>
+      <div class="form-group">
+        <label>Address:</label>
+        <input type="text" id="address">
+      </div>
+      <div class="form-group">
+        <label>System Allocated:</label>
         <select id="system">
-          <option value="PC1">PC 1</option>
-          <option value="PC2">PC 2</option>
-          <option value="PC3">PC 3</option>
-          <option value="PC4">PC 4</option>
-          <option value="PC5">PC 5</option>
-          <option value="PC6">PC 6</option>
-          <option value="PS4_1">PlayStation 1</option>
-          <option value="PS4_2">PlayStation 2</option>
+          <option value="PC-1">PC-1</option>
+          <option value="PC-2">PC-2</option>
+          <option value="PC-3">PC-3</option>
+          <option value="PC-4">PC-4</option>
+          <option value="PC-5">PC-5</option>
+          <option value="PC-6">PC-6</option>
+          <option value="PS-1">PlayStation-1</option>
+          <option value="PS-2">PlayStation-2</option>
         </select>
-      </label>
-      <label>Time Allotted (in minutes):
-        <input type="number" id="minutes" required />
-      </label>
-      <label>
-        <input type="checkbox" id="isChild" /> Below 12 Years
-      </label>
+      </div>
+      <div class="form-group">
+        <label>Session Time (in minutes):</label>
+        <input type="number" id="duration" min="1" required>
+      </div>
+      <div class="form-group">
+        <label><input type="checkbox" id="isChild"> Below 12 years?</label>
+      </div>
       <button type="submit">Start Session</button>
     </form>
-
-    <div class="sessions" id="sessionContainer"></div>
   </div>
 
-  <audio id="alarmSound" src="https://www.soundjay.com/buttons/sounds/beep-07.mp3"></audio>
+  <div class="cards-container" id="cards"></div>
+
+  <audio id="alertSound" src="https://cdn.pixabay.com/audio/2021/09/20/audio_04b84c3a74.mp3"></audio>
 
   <script>
-    const form = document.getElementById('entryForm');
-    const sessionContainer = document.getElementById('sessionContainer');
-    const alarmSound = document.getElementById('alarmSound');
-    let theme = 'light';
+    const cardsContainer = document.getElementById('cards');
+    const alertSound = document.getElementById('alertSound');
 
-    function toggleTheme() {
-      theme = theme === 'light' ? 'dark' : 'light';
-      document.body.classList.toggle('dark');
+    function formatTime(seconds) {
+      const h = Math.floor(seconds / 3600).toString().padStart(2, '0');
+      const m = Math.floor((seconds % 3600) / 60).toString().padStart(2, '0');
+      const s = (seconds % 60).toString().padStart(2, '0');
+      return `${h}:${m}:${s}`;
     }
 
-    form.addEventListener('submit', function(e) {
+    document.getElementById('sessionForm').addEventListener('submit', function (e) {
       e.preventDefault();
-
       const name = document.getElementById('name').value;
       const mobile = document.getElementById('mobile').value;
       const address = document.getElementById('address').value;
       const system = document.getElementById('system').value;
-      const minutes = parseInt(document.getElementById('minutes').value);
+      const duration = parseInt(document.getElementById('duration').value);
       const isChild = document.getElementById('isChild').checked;
 
-      const endTime = Date.now() + minutes * 60000;
-
       const card = document.createElement('div');
-      card.classList.add('card');
+      card.classList.add('session-card');
 
-      const icon = system.includes('PS') ? 'fa-gamepad' : 'fa-desktop';
-      const rate = system.includes('PS') ? 150 : 100;
+      let remaining = duration * 60;
+      const price = system.startsWith('PS') ? 150 : 100;
+      const timerEl = document.createElement('div');
+      const timerId = setInterval(() => {
+        remaining--;
+        timerEl.textContent = `Time Left: ${formatTime(remaining)}`;
 
-      card.innerHTML = `
-        <div><i class="fas ${icon} icon"></i> <strong>${system}</strong></div>
-        <h3>${name}</h3>
-        <p>${address}</p>
-        <p>Mobile: ${mobile}</p>
-        <p>Amount: ₹${rate}</p>
-        <p><strong id="timer"></strong></p>
-        <div class="actions">
-          <button class="extend">+5 min</button>
-          <button class="close">Close</button>
-        </div>
-      `;
-
-      sessionContainer.appendChild(card);
-
-      const timerEl = card.querySelector('#timer');
-
-      const interval = setInterval(() => {
-        const now = Date.now();
-        const remaining = endTime - now;
-
-        const hrs = Math.floor(remaining / 3600000);
-        const mins = Math.floor((remaining % 3600000) / 60000);
-        const secs = Math.floor((remaining % 60000) / 1000);
-
-        timerEl.textContent = `Time Left: ${hrs.toString().padStart(2,'0')}:${mins.toString().padStart(2,'0')}:${secs.toString().padStart(2,'0')}`;
-
-        const percentLeft = remaining / (minutes * 60000);
-
-        card.classList.remove('danger', 'warning');
-        if (percentLeft <= 0.1 && remaining > 0) {
-          card.classList.add('danger');
-        } else if (percentLeft <= 0.3) {
-          card.classList.add('warning');
+        if (remaining <= duration * 60 * 0.1) {
+          card.classList.add('alert-red');
         }
 
         if (remaining <= 0) {
-          clearInterval(interval);
-          timerEl.textContent = 'Time Up!';
-          alarmSound.play();
-
+          clearInterval(timerId);
+          alertSound.play();
           if (isChild) {
-            const msg = `Session Time Alert: ${name}'s time on ${system} is over. Please confirm to extend.`;
-            const url = `https://web.whatsapp.com/send?phone=91${mobile}&text=${encodeURIComponent(msg)}`;
-            window.open(url, '_blank');
+            const confirmLink = `https://web.whatsapp.com/send?phone=91${mobile}&text=Time%20is%20up%20for%20${name}.%20Do%20you%20approve%20extended%20play?`;
+            const childAlert = window.open(confirmLink, '_blank');
+            setTimeout(() => {
+              if (!childAlert.closed) {
+                childAlert.close();
+              }
+              cardsContainer.removeChild(card);
+            }, 5 * 60 * 1000);
+          } else {
+            cardsContainer.removeChild(card);
           }
         }
       }, 1000);
 
-      card.querySelector('.extend').addEventListener('click', () => {
-        endTime += 5 * 60000;
-      });
+      card.innerHTML = `
+        <div class="session-icon"><i class="fa-solid fa-gamepad"></i></div>
+        <strong>${name}</strong><br>
+        System: ${system}<br>
+        Price: ₹${price}<br>
+        <div id="timer">${formatTime(remaining)}</div>
+      `;
+      card.appendChild(timerEl);
 
-      card.querySelector('.close').addEventListener('click', () => {
-        card.remove();
-        clearInterval(interval);
-      });
+      const actionDiv = document.createElement('div');
+      actionDiv.className = 'card-actions';
 
-      form.reset();
+      const closeBtn = document.createElement('button');
+      closeBtn.textContent = 'Close';
+      closeBtn.onclick = () => {
+        clearInterval(timerId);
+        cardsContainer.removeChild(card);
+      };
+
+      const extendBtn = document.createElement('button');
+      extendBtn.textContent = 'Extend';
+      extendBtn.onclick = () => {
+        const extraMin = prompt('Add minutes:');
+        if (extraMin) remaining += parseInt(extraMin) * 60;
+      };
+
+      actionDiv.appendChild(closeBtn);
+      actionDiv.appendChild(extendBtn);
+      card.appendChild(actionDiv);
+
+      cardsContainer.appendChild(card);
     });
   </script>
 </body>
+
 </html>
