@@ -17,22 +17,19 @@ const sessionSchema = new mongoose.Schema({
     type: String,
     required: true,
     enum: [
-  'PC1', 'PC2', 'PC3', 'PC4', 'PC5', 'PC6',
-  'CONSOLE1', 'CONSOLE2'
+      'PC1', 'PC2', 'PC3', 'PC4', 'PC5', 'PC6',
+      'CONSOLE1', 'CONSOLE2'
     ],
   },
   duration: {
-    type: Number, // in minutes
-    required: false
+    type: Number // in minutes
+    // Do NOT set `required: true`
   },
   startTime: {
     type: Date,
     default: Date.now
   },
-   endTime: {
-    type: Date,
-    default: Date.now
-  },
+  endTime: Date,
   isActive: {
     type: Boolean,
     default: true
