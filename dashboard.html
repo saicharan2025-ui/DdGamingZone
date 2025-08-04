@@ -127,27 +127,28 @@
         let totalAmount = 0;
 
         todaySessions.forEach((session, index) => {
-          const start = new Date(session.startTime);
-          const durationHours = (session.duration / 60).toFixed(2);
-          const isConsole = session.systemNumber.toLowerCase().includes('console');
-          const rate = isConsole ? 150 : 100;
-          const amount = (rate * durationHours).toFixed(2);
-          totalAmount += parseFloat(amount);
+  const start = new Date(session.startTime);
+  const durationHours = (session.duration / 60).toFixed(2);
+  const isConsole = session.systemNumber.toLowerCase().includes('console');
 
-          const row = document.createElement('tr');
-          row.innerHTML = `
-            <td>${index + 1}</td>
-            <td>${session.name}</td>
-            <td>${session.mobile}</td>
-            <td>${session.address}</td>
-            <td>${session.systemNumber}</td>
-            <td>${durationHours}</td>
-            <td>₹${amount}</td>
-            <td>${start.toLocaleTimeString()}</td>
-          `;
-          tableBody.appendChild(row);
-        });
+  const ratePerHour = isConsole ? 150 : 100;
+  const hoursUsed = Math.ceil(session.duration / 60); // Round up to nearest hour
+  const amount = ratePerHour * hoursUsed;
 
+  totalAmount += amount;
+
+  const row = document.createElement('tr');
+  row.innerHTML = `
+    <td>${session.name}</td>
+    <td>${session.mobile}</td>
+    <td>${session.address}</td>
+    <td>${session.systemNumber}</td>
+    <td>${durationHours} hrs</td>
+    <td>₹${amount}</td>
+    <td>${start.toLocaleTimeString()}</td>
+  `;
+  tableBody.appendChild(row);
+});
         document.getElementById('totalAmount').innerHTML = `Total Amount Earned Today: ₹${totalAmount.toFixed(2)}`;
       } catch (err) {
         console.error("Failed to fetch sessions", err);
