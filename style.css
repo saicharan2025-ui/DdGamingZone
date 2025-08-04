@@ -1,0 +1,40 @@
+body {
+  font-family: Arial, sans-serif;
+  background: url('https://images.unsplash.com/photo-1606813902914-207727a0aa10') no-repeat center center fixed;
+  background-size: cover;
+  margin: 0;
+  padding: 0;
+}
+header {
+  background: rgba(0,0,0,0.7);
+  color: #fff;
+  padding: 1em;
+  text-align: center;
+}
+form {
+  background: rgba(255,255,255,0.9);
+  padding: 1em;
+  margin: 1em auto;
+  max-width: 400px;
+  border-radius: 10px;
+}
+#sessionsContainer {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+}
+.session-card {
+  margin: 10px;
+  padding: 10px;
+  background: rgba(255,255,255,0.95);
+  border: 1px solid #ccc;
+  border-radius: 10px;
+  transition: transform 0.2s;
+}
+.session-card:hover {
+  transform: scale(1.05);
+}
+.session-alert {
+  border: 2px solid red;
+  background: #ffe6e6;
+}
