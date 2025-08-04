@@ -52,8 +52,6 @@ app.get("/api/today-sessions", async (req, res) => {
   }
 });
 
-const Session = require("./sessions.js"); // Ensure this line is at the top if not already
-
 // Get sessions for today or past days
 app.get("/api/get-sessions", async (req, res) => {
   try {
