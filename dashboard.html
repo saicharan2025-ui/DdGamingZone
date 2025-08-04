@@ -126,19 +126,19 @@
         tableBody.innerHTML = '';
         let totalAmount = 0;
 
-        todaySessions.forEach((session, index) => {
+       todaySessions.forEach((session, index) => {
   const start = new Date(session.startTime);
   const durationHours = (session.duration / 60).toFixed(2);
-  const isConsole = session.systemNumber.toLowerCase().includes('console');
-
+  const isConsole = session.systemNumber.toLowerCase().includes('ps'); // Check for PS
   const ratePerHour = isConsole ? 150 : 100;
-  const hoursUsed = Math.ceil(session.duration / 60); // Round up to nearest hour
+  const hoursUsed = Math.ceil(session.duration / 60); // Round up
   const amount = ratePerHour * hoursUsed;
 
   totalAmount += amount;
 
   const row = document.createElement('tr');
   row.innerHTML = `
+    <td>${index + 1}</td>
     <td>${session.name}</td>
     <td>${session.mobile}</td>
     <td>${session.address}</td>
