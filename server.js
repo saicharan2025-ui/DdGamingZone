@@ -88,30 +88,6 @@ app.get("/api/active-sessions", async (req, res) => {
   }
 });
 
-// End a session (style 1 - sessionId in body)
-//app.post('/api/end-session', async (req, res) => {
-  try {
-    const { sessionId } = req.body;
-    const session = await Session.findById(sessionId);
-
-    if (!session) {
-      return res.status(404).json({ error: 'Session not found' });
-    }
-
-    const now = new Date();
-    session.endTime = now;
-    session.isActive = false;
-    session.duration = Math.ceil((now - session.startTime) / 60000);
-
-    await session.save();
-
-    res.json({ message: 'Session ended successfully', session });
-  } catch (error) {
-    console.error('Error ending session:', error);
-    res.status(500).json({ error: 'Failed to end session' });
-  }
-//});
-
 // End a session (style 2 - sessionId in URL)
 app.post('/api/end-session/:id', async (req, res) => {
   try {
