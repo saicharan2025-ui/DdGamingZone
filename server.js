@@ -25,16 +25,28 @@ db.once("open", () => console.log("MongoDB connected successfully"));
 const Session = require("./sessions.js");
 
 // Save a new session
-app.post("/api/save-session", async (req, res) => {
+app.post('/api/start-session', async (req, res) => {
   try {
-    const newSession = new Session(req.body);
-    await newSession.save();
-    res.status(200).json({ message: "Session saved successfully" });
+    const sessionData = {
+      playerName: req.body.playerName,
+      mobile: req.body.mobile,
+      address: req.body.address,
+      systemNumber: req.body.systemNumber,
+      isChild: req.body.isChild,
+      startTime: new Date(),        // ⏱ Set current time
+      isActive: true
+    };
+
+    const session = new Session(sessionData);
+    await session.save();
+
+    res.status(201).json(session);
   } catch (error) {
-    console.error("Error saving session:", error);
-    res.status(500).json({ message: "Server Error" });
+    console.error('Error saving session:', error);
+    res.status(500).json({ error: 'Failed to save session' });
   }
 });
+
 
 // Get today's sessions
 app.get("/api/today-sessions", async (req, res) => {
@@ -77,24 +89,32 @@ app.get("/api/active-sessions", async (req, res) => {
 });
 
 // End a session
-app.post("/api/end-session/:id", async (req, res) => {
+app.post('/api/end-session', async (req, res) => {
   try {
-    const session = await Session.findByIdAndUpdate(
-      req.params.id,
-      { isActive: false, endTime: new Date() },
-      { new: true }
-    );
+    const { sessionId } = req.body;
+    const session = await Session.findById(sessionId);
 
     if (!session) {
-      return res.status(404).json({ message: "Session not found" });
+      return res.status(404).json({ error: 'Session not found' });
     }
 
-    res.json({ message: "Session ended", session });
-  } catch (err) {
-    console.error("Error ending session:", err);
-    res.status(500).json({ message: "Server Error" });
+    const now = new Date();
+    session.endTime = now;
+    session.isActive = false;
+
+    const durationMs = now - session.startTime;
+    const durationInMinutes = Math.ceil(durationMs / 60000);
+    session.duration = durationInMinutes;
+
+    await session.save();
+
+    res.json({ message: 'Session ended successfully', session });
+  } catch (error) {
+    console.error('Error ending session:', error);
+    res.status(500).json({ error: 'Failed to end session' });
   }
 });
+
 
 // Serve index.html on root
 app.get("/", (req, res) => {
