@@ -67,6 +67,24 @@ app.get("/api/get-sessions", async (req, res) => {
   }
 });
 
+app.post("/api/end-session/:id", async (req, res) => {
+  try {
+    const sessionId = req.params.id;
+    const session = await Session.findByIdAndUpdate(sessionId, {
+      isActive: false,
+      endTime: new Date(),
+    }, { new: true });
+
+    if (!session) {
+      return res.status(404).json({ message: "Session not found" });
+    }
+
+    res.status(200).json({ message: "Session ended", session });
+  } catch (err) {
+    console.error("Error ending session:", err);
+    res.status(500).json({ message: "Server Error" });
+  }
+});
 
 // Serve index.html on root
 app.get("/", (req, res) => {
