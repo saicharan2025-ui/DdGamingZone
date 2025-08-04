@@ -86,25 +86,17 @@ app.post("/api/end-session/:id", async (req, res) => {
   }
 });
 
-// GET active sessions
-// server.js or routes file
-app.get('/api/active-sessions', async (req, res) => {
+// sessions.js (Express router file)
+app.get('/api/get-sessions', async (req, res) => {
   try {
-    const now = new Date();
-    const sessions = await Session.find();
-
-    const activeSessions = sessions.filter(s => {
-      const end = new Date(s.startTime);
-      end.setMinutes(end.getMinutes() + s.duration);
-      return end > now;
-    });
-
-    res.json(activeSessions);
+    const sessions = await Session.find({});
+    res.json(sessions); // ✅ Ensure this is a JSON array
   } catch (err) {
     console.error(err);
-    res.status(500).json({ error: 'Server error' });
+    res.status(500).json({ error: 'Failed to fetch sessions' });
   }
 });
+
 
 // POST to end a session
 app.post('/api/end-session/:id', async (req, res) => {
