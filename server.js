@@ -86,9 +86,6 @@ app.post("/api/end-session/:id", async (req, res) => {
   }
 });
 
-// Add this to the top if not already
-const Session = require('./sessions.js');
-
 // GET active sessions
 app.get('/api/active-sessions', async (req, res) => {
   try {
