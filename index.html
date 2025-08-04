@@ -1,143 +1,146 @@
-<!-- CLEANED & FIXED HTML FILE -->
 <!DOCTYPE html>
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
   <title>Gaming Zone Tracker</title>
-  <link href="https://fonts.googleapis.com/css2?family=Orbitron&display=swap" rel="stylesheet" />
   <style>
     body {
       margin: 0;
-      font-family: 'Orbitron', sans-serif;
+      font-family: 'Segoe UI', sans-serif;
       background: url('https://cdn.dribbble.com/userupload/6508147/file/original-11794da09cf2fda821918b0be52877cf.jpg?format=webp&resize=400x300&vertical=center') no-repeat center center fixed;
       background-size: cover;
-      color: #fff;
-    }
-
-    .container {
-      max-width: 1000px;
-      margin: auto;
-      padding: 2rem;
+      backdrop-filter: blur(2px);
+      color: white;
     }
 
     h1 {
       text-align: center;
-      margin-bottom: 2rem;
+      margin-top: 20px;
       font-size: 2.5rem;
-      text-shadow: 2px 2px 5px #000;
+      color: #ffcc00;
+      text-shadow: 1px 1px 5px #000;
     }
 
     form {
-      display: grid;
-      gap: 1rem;
       background: rgba(0, 0, 0, 0.7);
-      padding: 2rem;
-      border-radius: 15px;
+      padding: 20px;
+      max-width: 500px;
+      margin: 20px auto;
+      border-radius: 20px;
+      box-shadow: 0 0 15px rgba(0, 0, 0, 0.6);
     }
 
-    input, select, button {
-      padding: 0.7rem;
-      font-size: 1rem;
-      border-radius: 10px;
+    label {
+      display: block;
+      margin-top: 10px;
+    }
+
+    input, select {
+      width: 100%;
+      padding: 8px;
+      border-radius: 8px;
       border: none;
+      margin-top: 5px;
     }
 
-    input[type="checkbox"] {
-      width: auto;
+    button {
+      width: 100%;
+      padding: 10px;
+      margin-top: 15px;
+      background-color: #28a745;
+      border: none;
+      border-radius: 8px;
+      color: white;
+      font-size: 16px;
+      cursor: pointer;
+      transition: background-color 0.3s ease;
     }
 
-    .sessions {
+    button:hover {
+      background-color: #218838;
+    }
+
+    .sessions-container {
       display: flex;
       flex-wrap: wrap;
-      gap: 1.5rem;
-      margin-top: 2rem;
       justify-content: center;
+      gap: 15px;
+      padding: 20px;
     }
 
-    .card {
-      position: relative;
+    .session-card {
+      width: 200px;
+      height: 150px;
       background: rgba(255, 255, 255, 0.1);
-      backdrop-filter: blur(10px);
       border-radius: 20px;
-      padding: 1rem;
-      width: 240px;
-      transition: transform 0.3s ease, box-shadow 0.3s;
-      box-shadow: 0 0 10px rgba(255,255,255,0.2);
-    }
-
-    .card:hover {
-      transform: scale(1.07);
-      box-shadow: 0 0 25px rgba(255,255,255,0.3);
-    }
-
-    .card img {
-      width: 100%;
-      border-radius: 15px;
-      margin-bottom: 0.5rem;
-    }
-
-    .card p {
-      margin: 0.3rem 0;
-    }
-
-    .timer {
-      font-size: 1.2rem;
-      font-weight: bold;
-      margin-top: 0.5rem;
-      color: #0f0;
-    }
-
-    .timer.warning {
-      color: red !important;
-      animation: blink 1s step-start infinite;
-    }
-
-    @keyframes blink {
-      50% { opacity: 0.5; }
-    }
-
-    .whatsapp-button {
-      background: #25D366;
-      color: #fff;
-      margin-top: 0.7rem;
-      cursor: pointer;
-    }
-
-    .delete-btn {
-      background: #ff4444;
+      box-shadow: 0 4px 15px rgba(0, 0, 0, 0.5);
+      padding: 15px;
       color: white;
-      margin-top: 0.7rem;
-      cursor: pointer;
+      text-align: center;
+      position: relative;
+      transition: transform 0.3s ease;
+      backdrop-filter: blur(8px);
+    }
+
+    .session-card:hover {
+      transform: scale(1.05);
+      box-shadow: 0 8px 25px rgba(0, 0, 0, 0.7);
+    }
+
+    .session-card .icon {
+      font-size: 30px;
+    }
+
+    .session-card h3 {
+      margin: 10px 0 5px 0;
+      font-size: 18px;
+    }
+
+    .session-card p {
+      margin: 2px 0;
+      font-size: 14px;
     }
   </style>
 </head>
 <body>
-  <div class="container">
-    <h1>Gaming Zone Tracker</h1>
-    <form id="sessionForm">
-      <input type="text" id="name" placeholder="Player Name" required />
-      <input type="tel" id="mobile" placeholder="Mobile Number" required />
-      <input type="text" id="address" placeholder="Address" required />
-      <label for="systemNumber">System Number:</label>
-      <select id="systemNumber" required>
-        <option value="">-- Select System --</option>
-        <option value="PC1">PC1</option>
-        <option value="PC2">PC2</option>
-        <option value="PC3">PC3</option>
-        <option value="PC4">PC4</option>
-        <option value="PC5">PC5</option>
-        <option value="PC6">PC6</option>
-        <option value="Console1">Console1</option>
-        <option value="Console2">Console2</option>
-      </select>
-      <input type="number" id="duration" placeholder="Duration (minutes)" required min="1" />
-      <label><input type="checkbox" id="isChild" /> Below 12 years?</label>
-      <button type="submit">Start Session</button>
-    </form>
+  <h1>🎮 Gaming Zone Tracker</h1>
 
-    <div class="sessions" id="sessionsContainer"></div>
-  </div>
+  <form id="sessionForm">
+    <label for="name">Player Name:</label>
+    <input type="text" id="name" required />
+
+    <label for="mobile">Mobile Number:</label>
+    <input type="tel" id="mobile" required pattern="[0-9]{10}" />
+
+    <label for="address">Address:</label>
+    <input type="text" id="address" required />
+
+    <label for="systemNumber">System Number:</label>
+    <select id="systemNumber" required>
+      <option value="">-- Select --</option>
+      <option value="PC1">💻 PC1</option>
+      <option value="PC2">💻 PC2</option>
+      <option value="PC3">💻 PC3</option>
+      <option value="PC4">💻 PC4</option>
+      <option value="PC5">💻 PC5</option>
+      <option value="PC6">💻 PC6</option>
+      <option value="Console1">🎮 Console 1</option>
+      <option value="Console2">🎮 Console 2</option>
+    </select>
+
+    <label for="duration">Session Duration (minutes):</label>
+    <input type="number" id="duration" min="10" required />
+
+    <label>
+      <input type="checkbox" id="under12" />
+      Child Below 12 Years
+    </label>
+
+    <button type="submit">Start Session</button>
+  </form>
+
+  <div class="sessions-container" id="sessionsContainer"></div>
 
   <script>
     const form = document.getElementById("sessionForm");
@@ -149,93 +152,51 @@
       const name = document.getElementById("name").value.trim();
       const mobile = document.getElementById("mobile").value.trim();
       const address = document.getElementById("address").value.trim();
-      const system = document.getElementById("systemNumber").value;
-      const duration = parseInt(document.getElementById("duration").value);
-      const isChild = document.getElementById("isChild").checked;
+      const systemNumber = document.getElementById("systemNumber").value;
+      const duration = document.getElementById("duration").value;
+      const under12 = document.getElementById("under12").checked;
 
-      if (!name || !mobile || !address || !system || !duration) {
+      if (!name || !mobile || !address || !systemNumber || !duration) {
         alert("Please fill in all required fields.");
         return;
       }
 
-      const sessionId = Date.now();
-      const endTime = new Date().getTime() + duration * 60 * 1000;
-
-      createSessionCard({ name, mobile, address, system, duration, isChild, endTime, sessionId });
+      const session = {
+        name,
+        mobile,
+        address,
+        systemNumber,
+        duration,
+        under12,
+      };
 
       try {
-        const res = await fetch("/api/save-session", {
+        const response = await fetch("/api/save-session", {
           method: "POST",
           headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ name, mobile, address, systemNumber: system, duration, isChild, sessionId })
+          body: JSON.stringify(session),
         });
 
-        const data = await res.json();
-        if (!res.ok) throw new Error(data.message || "Server error");
-
+        if (response.ok) {
+          const card = document.createElement("div");
+          card.className = "session-card";
+          card.innerHTML = `
+            <div class="icon">${systemNumber.includes("PC") ? "💻" : "🎮"}</div>
+            <h3>${name}</h3>
+            <p>${systemNumber}</p>
+            <p>${duration} mins</p>
+            ${under12 ? `<p style="color:#ff4444">👶 Child</p>` : ""}
+          `;
+          sessionsContainer.appendChild(card);
+          form.reset();
+        } else {
+          alert("Failed to save session.");
+        }
       } catch (err) {
-        console.error("Save failed:", err);
-        alert("Failed to save session. Please check the server.");
+        console.error("Error saving session:", err);
+        alert("Error while saving session.");
       }
-
-      form.reset();
     });
-
-    function createSessionCard({ name, mobile, address, system, duration, isChild, endTime, sessionId }) {
-      const card = document.createElement("div");
-      card.className = "card";
-
-      card.innerHTML = `
-        <img src="https://cdn.dribbble.com/users/1708816/screenshots/15688780/media/f260fcbd31c14518f4b5ef9ddf7c03cf.png" />
-        <p><strong>Name:</strong> ${name}</p>
-        <p><strong>System:</strong> ${system}</p>
-        <p><strong>Duration:</strong> ${duration} mins</p>
-        <p><strong>Child:</strong> ${isChild ? "Yes" : "No"}</p>
-        <div class="timer" id="timer-${sessionId}">00:00:00</div>
-        <button class="whatsapp-button" onclick="sendWhatsApp('${mobile}', '${name}')">Notify via WhatsApp</button>
-        <button class="delete-btn" onclick="this.parentElement.remove()">End Session</button>
-      `;
-
-      sessionsContainer.appendChild(card);
-
-      const timerEl = card.querySelector(`#timer-${sessionId}`);
-      const interval = setInterval(() => {
-        const now = new Date().getTime();
-        const diff = endTime - now;
-
-        if (diff <= 0) {
-          timerEl.textContent = "Session Over";
-          timerEl.classList.add("warning");
-          clearInterval(interval);
-
-          if (isChild) {
-            const alertNow = confirm(`Session over for child ${name}. Alert parent via WhatsApp?`);
-            if (alertNow) sendWhatsApp(mobile, name);
-            setTimeout(() => {
-              if (document.body.contains(card)) card.remove();
-            }, 5 * 60 * 1000);
-          }
-
-          return;
-        }
-
-        const hours = Math.floor(diff / (1000 * 60 * 60));
-        const minutes = Math.floor((diff % (1000 * 60 * 60)) / (1000 * 60));
-        const seconds = Math.floor((diff % (1000 * 60)) / 1000);
-
-        timerEl.textContent = `${String(hours).padStart(2, '0')}:${String(minutes).padStart(2, '0')}:${String(seconds).padStart(2, '0')}`;
-
-        const totalDurationMs = duration * 60 * 1000;
-        if (diff <= totalDurationMs * 0.1) {
-          timerEl.classList.add("warning");
-        }
-      }, 1000);
-    }
-
-    function sendWhatsApp(number, name) {
-      const url = `https://web.whatsapp.com/send?phone=91${number}&text=Hi,we are from Dhwani Gaming Arena. Your Child ${name}'s game session has ended. Please reply yes with allocated time for us to continue the session.`;
-      window.open(url, '_blank');
-    }
   </script>
 </body>
 </html>
