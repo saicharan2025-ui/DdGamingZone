@@ -4,7 +4,7 @@ document.getElementById('sessionForm').addEventListener('submit', async (e) => {
     name: document.getElementById('name').value,
     mobile: document.getElementById('mobile').value,
     address: document.getElementById('address').value,
-    system: document.getElementById('system').value,
+    const systemNumber = document.getElementById("systemNumber").value.trim();,
     isChild: document.getElementById('isChild').checked,
     duration: parseInt(document.getElementById('duration').value)
   };
