@@ -2,173 +2,266 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>DD Gaming Zone Tracker</title>
-  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>DD Gaming Zone</title>
+  <link href="https://fonts.googleapis.com/css2?family=Orbitron&display=swap" rel="stylesheet">
   <style>
+    :root {
+      --bg-light: #f0f0f0;
+      --text-light: #111;
+      --bg-dark: #111;
+      --text-dark: #f0f0f0;
+    }
+
     body {
-      background: url('https://assets-v2.lottiefiles.com/a/92d96e2c-117a-11ee-b889-930318cb76ca/bfF68kVD7b.gif') no-repeat center center fixed;
+      font-family: 'Orbitron', sans-serif;
+      margin: 0;
+      padding: 0;
+      background: url('https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQEavDT1riZUmGAH5TxF-wa3SwP9V1ko7qhLA&s') no-repeat center center fixed;
       background-size: cover;
-      color: white;
+      color: var(--text-dark);
+      transition: all 0.3s ease-in-out;
     }
-    .session-card {
-      transition: transform 0.3s ease, background-color 0.3s ease;
+
+    body.light {
+      background: url('https://wallpapercave.com/wp/wp8462689.jpg') no-repeat center center fixed;
+      background-size: cover;
+      color: var(--text-light);
+    }
+
+    .container {
+      max-width: 900px;
+      margin: auto;
+      padding: 20px;
+      backdrop-filter: blur(12px);
+      background: rgba(0,0,0,0.6);
       border-radius: 10px;
-      box-shadow: 0 4px 8px rgba(0,0,0,0.6);
+      margin-top: 30px;
     }
-    .session-card:hover {
-      transform: scale(1.03);
+
+    body.light .container {
+      background: rgba(255,255,255,0.85);
     }
-    .critical {
-      background-color: #ff4c4c !important;
+
+    h1 {
+      text-align: center;
+      font-size: 2rem;
+      margin-bottom: 20px;
     }
-    .card-container {
-      display: flex;
-      flex-wrap: wrap;
-      gap: 1rem;
+
+    label {
+      display: block;
+      margin-top: 10px;
+      font-weight: bold;
     }
-    .modal-dark .modal-content {
-      background-color: #2c2c2c;
+
+    input, select, button {
+      width: 100%;
+      padding: 10px;
+      margin-top: 5px;
+      font-size: 1rem;
+      border-radius: 5px;
+      border: none;
+    }
+
+    button {
+      background-color: #00c853;
       color: white;
+      margin-top: 20px;
+      cursor: pointer;
+    }
+
+    .toggle-theme {
+      position: absolute;
+      top: 15px;
+      right: 15px;
+      background: #222;
+      color: #fff;
+      border-radius: 20px;
+      padding: 5px 10px;
+      font-size: 0.8rem;
+      cursor: pointer;
+    }
+
+    .session-card {
+      margin-top: 20px;
+      padding: 10px;
+      background: #222;
+      color: #fff;
+      border-radius: 10px;
+      position: relative;
+      animation: fadeIn 0.5s ease;
+    }
+
+    body.light .session-card {
+      background: #ddd;
+      color: #000;
+    }
+
+    .session-card.alert {
+      background-color: red;
+    }
+
+    .actions {
+      display: flex;
+      justify-content: space-between;
+      gap: 10px;
+      margin-top: 10px;
+    }
+
+    @keyframes fadeIn {
+      from {opacity: 0; transform: translateY(10px);}
+      to {opacity: 1; transform: translateY(0);}
+    }
+
+    .timer {
+      font-size: 1.2rem;
+      font-weight: bold;
+    }
+
+    @media (max-width: 768px) {
+      .actions {
+        flex-direction: column;
+      }
     }
   </style>
 </head>
-<body>
-  <div class="container py-4">
-    <h1 class="text-center mb-4">🎮 DD Gaming Zone Tracker</h1>
-    <form id="trackerForm" class="row g-3">
-      <div class="col-md-4">
-        <input type="text" id="name" class="form-control" placeholder="Name" required />
-      </div>
-      <div class="col-md-4">
-        <input type="text" id="mobile" class="form-control" placeholder="Mobile Number" required />
-      </div>
-      <div class="col-md-4">
-        <input type="text" id="address" class="form-control" placeholder="Address" />
-      </div>
-      <div class="col-md-3">
-        <select id="system" class="form-select" required>
-          <option value="">Select System</option>
-          <option value="PC-1">PC-1</option>
-          <option value="PC-2">PC-2</option>
-          <option value="PC-3">PC-3</option>
-          <option value="PC-4">PC-4</option>
-          <option value="PC-5">PC-5</option>
-          <option value="PC-6">PC-6</option>
-          <option value="PS-1">PlayStation-1</option>
-          <option value="PS-2">PlayStation-2</option>
-        </select>
-      </div>
-      <div class="col-md-3">
-        <input type="number" id="allocatedTime" class="form-control" placeholder="Time in Minutes" required />
-      </div>
-      <div class="col-md-2">
-        <input type="checkbox" id="isChild" /> <label for="isChild">Below 12?</label>
-      </div>
-      <div class="col-md-2">
-        <button type="submit" class="btn btn-success w-100">Start Session</button>
-      </div>
+<body class="dark">
+  <div class="toggle-theme" onclick="toggleTheme()">Toggle Theme</div>
+  <div class="container">
+    <h1>DD Gaming Zone - Session Tracker</h1>
+    <form id="sessionForm">
+      <label>Name</label>
+      <input type="text" id="name" required />
+      <label>Mobile Number</label>
+      <input type="tel" id="mobile" required />
+      <label>Address</label>
+      <input type="text" id="address" required />
+      <label>System Allocated</label>
+      <select id="system" required>
+        <option value="" disabled selected>Select System</option>
+        <option value="PC 1">PC 1</option>
+        <option value="PC 2">PC 2</option>
+        <option value="PC 3">PC 3</option>
+        <option value="PC 4">PC 4</option>
+        <option value="PC 5">PC 5</option>
+        <option value="PC 6">PC 6</option>
+        <option value="PS 1">PlayStation 1</option>
+        <option value="PS 2">PlayStation 2</option>
+      </select>
+      <label>Allocated Time (minutes)</label>
+      <input type="number" id="allocatedTime" required min="1" />
+      <label><input type="checkbox" id="isChild" /> Child under 12 years</label>
+      <button type="submit">Start Session</button>
     </form>
 
-    <hr class="my-4">
-    <div class="card-container" id="sessionContainer"></div>
+    <div id="sessions"></div>
   </div>
 
-  <!-- Approval Modal -->
-  <div class="modal fade" id="approvalModal" tabindex="-1" aria-labelledby="approvalModalLabel" aria-hidden="true">
-    <div class="modal-dialog">
-      <div class="modal-content modal-dark">
-        <div class="modal-header">
-          <h5 class="modal-title" id="approvalModalLabel">Record Parent Approval</h5>
-          <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
-        </div>
-        <div class="modal-body">
-          <textarea class="form-control" id="approvalNotes" placeholder="Approval notes..." rows="3"></textarea>
-          <input type="number" class="form-control mt-2" id="extendMinutes" placeholder="Extend time in minutes" />
-        </div>
-        <div class="modal-footer">
-          <button class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
-          <button class="btn btn-success" id="approveBtn">Approve</button>
-        </div>
-      </div>
-    </div>
-  </div>
+  <audio id="alertSound" src="https://actions.google.com/sounds/v1/alarms/alarm_clock.ogg" preload="auto"></audio>
 
-  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
   <script>
-    let sessions = [];
-    const container = document.getElementById('sessionContainer');
+    const form = document.getElementById('sessionForm');
+    const sessionsDiv = document.getElementById('sessions');
+    const alertSound = document.getElementById('alertSound');
 
-    document.getElementById('trackerForm').addEventListener('submit', function(e) {
+    let sessionList = [];
+
+    function toggleTheme() {
+      document.body.classList.toggle('light');
+    }
+
+    function createSessionCard(session) {
+      const card = document.createElement('div');
+      card.className = 'session-card';
+      card.id = `session-${session.id}`;
+
+      const timer = document.createElement('div');
+      timer.className = 'timer';
+      timer.innerText = '00:00:00';
+      card.appendChild(timer);
+
+      const info = document.createElement('div');
+      info.innerHTML = `
+        <strong>${session.name}</strong> | ${session.system} | ₹${session.amount}<br/>
+        Time Allocated: ${session.allocated} mins <br/>
+        Child: ${session.isChild ? 'Yes' : 'No'}
+      `;
+      card.appendChild(info);
+
+      const parentApproval = document.createElement('label');
+      parentApproval.innerHTML = `<input type="checkbox" /> Parent permission recorded`;
+      card.appendChild(parentApproval);
+
+      const actions = document.createElement('div');
+      actions.className = 'actions';
+
+      const extend = document.createElement('button');
+      extend.innerText = 'Extend Time';
+      extend.onclick = () => {
+        const extra = prompt('Add how many minutes?');
+        if (extra && !isNaN(extra)) {
+          session.allocated += parseInt(extra);
+        }
+      }
+
+      const close = document.createElement('button');
+      close.innerText = 'Close';
+      close.onclick = () => {
+        clearInterval(session.interval);
+        card.remove();
+      }
+
+      actions.appendChild(extend);
+      actions.appendChild(close);
+      card.appendChild(actions);
+
+      sessionsDiv.appendChild(card);
+
+      let elapsed = 0;
+      session.interval = setInterval(() => {
+        elapsed++;
+        const remaining = (session.allocated * 60) - elapsed;
+        const mins = Math.floor(remaining / 60);
+        const secs = remaining % 60;
+        timer.innerText = `${String(Math.floor(elapsed / 3600)).padStart(2,'0')}:${String(Math.floor((elapsed % 3600)/60)).padStart(2,'0')}:${String(elapsed % 60).padStart(2,'0')}`;
+
+        if (remaining <= (session.allocated * 60 * 0.1)) {
+          card.classList.add('alert');
+        }
+
+        if (remaining <= 0) {
+          clearInterval(session.interval);
+          alertSound.play();
+          alert(`${session.system} - Session Time Over`);
+        }
+      }, 1000);
+    }
+
+    form.onsubmit = (e) => {
       e.preventDefault();
-
       const name = document.getElementById('name').value;
       const mobile = document.getElementById('mobile').value;
       const address = document.getElementById('address').value;
       const system = document.getElementById('system').value;
-      const allocatedTime = parseInt(document.getElementById('allocatedTime').value);
+      const allocated = parseInt(document.getElementById('allocatedTime').value);
       const isChild = document.getElementById('isChild').checked;
+      const amount = system.includes('PS') ? 150 : 100;
 
       const session = {
         id: Date.now(),
-        name, mobile, address, system,
-        allocatedTime,
-        startTime: new Date(),
+        name,
+        mobile,
+        address,
+        system,
+        allocated,
         isChild,
-        approved: false
+        amount
       };
-      sessions.push(session);
-      renderSessions();
-    });
 
-    function renderSessions() {
-      container.innerHTML = '';
-      sessions.forEach((session) => {
-        const elapsed = (new Date() - new Date(session.startTime)) / 60000;
-        const remaining = session.allocatedTime - elapsed;
-        const percentLeft = (remaining / session.allocatedTime) * 100;
-
-        const div = document.createElement('div');
-        div.className = `p-3 session-card bg-dark text-white ${percentLeft <= 10 ? 'critical' : ''}`;
-        div.innerHTML = `
-          <h5>${session.name} (${session.system})</h5>
-          <p>Time Left: ${Math.max(0, Math.floor(remaining))} min</p>
-          <p>${session.isChild ? '👶 Child' : '🧑 Adult'} | ₹${session.system.startsWith('PC') ? 100 : 150}</p>
-          <button class="btn btn-warning btn-sm" onclick="openApproval(${session.id})">Record Approval</button>
-          <button class="btn btn-danger btn-sm" onclick="closeSession(${session.id})">Close</button>
-        `;
-        container.appendChild(div);
-
-        if (remaining <= 0 && !session.alerted) {
-          alert(`⏰ Time's up for ${session.name} on ${session.system}`);
-          session.alerted = true;
-        }
-      });
+      createSessionCard(session);
+      form.reset();
     }
-
-    function openApproval(id) {
-      const session = sessions.find(s => s.id === id);
-      if (!session) return;
-
-      const modal = new bootstrap.Modal(document.getElementById('approvalModal'));
-      modal.show();
-      document.getElementById('approveBtn').onclick = function () {
-        const extend = parseInt(document.getElementById('extendMinutes').value);
-        if (!isNaN(extend)) {
-          session.allocatedTime += extend;
-        }
-        session.approved = true;
-        modal.hide();
-        renderSessions();
-      };
-    }
-
-    function closeSession(id) {
-      sessions = sessions.filter(s => s.id !== id);
-      renderSessions();
-    }
-
-    setInterval(renderSessions, 10000);
   </script>
 </body>
 </html>
