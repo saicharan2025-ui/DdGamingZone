@@ -1,237 +1,174 @@
 <!DOCTYPE html>
 <html lang="en">
-
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>DD Gaming Zone</title>
-  <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@500&display=swap" rel="stylesheet">
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>DD Gaming Zone Tracker</title>
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css">
   <style>
-    :root {
-      --bg-dark: #0f0f0f;
-      --bg-light: #f2f2f2;
-      --text-dark: #ffffff;
-      --text-light: #000000;
-      --card-dark: #1f1f1f;
-      --card-light: #ffffff;
-    }
-
-    * {
-      margin: 0;
-      padding: 0;
-      box-sizing: border-box;
-    }
-
     body {
-      font-family: 'Orbitron', sans-serif;
-      background-color: var(--bg-dark);
-      color: var(--text-dark);
-      background-image: url('https://images.pexels.com/photos/1670977/pexels-photo-1670977.jpeg?cs=srgb&dl=pexels-francesco-ungaro-1670977.jpg&fm=jpg');
+      background: url('https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcR_S63tEeMoYI5fpKQPxkBM9O5I0yZ5jfa9yA&s') no-repeat center center fixed;
       background-size: cover;
-      background-attachment: fixed;
-      background-position: center;
-      transition: background-color 0.3s, color 0.3s;
+      color: white;
     }
-
-    .container {
-      max-width: 1000px;
-      margin: auto;
-      padding: 2rem;
-      background-color: rgba(0, 0, 0, 0.7);
-      border-radius: 12px;
-      box-shadow: 0 0 10px rgba(255, 255, 255, 0.1);
-    }
-
-    h1 {
-      text-align: center;
-      margin-bottom: 1rem;
-      font-size: 2.2rem;
-      color: #00ffcc;
-    }
-
-    form {
-      display: grid;
-      gap: 1rem;
-    }
-
-    label {
-      display: block;
-      font-weight: bold;
-    }
-
-    input, select, button {
-      padding: 0.5rem;
-      border-radius: 6px;
-      border: none;
-      font-size: 1rem;
-    }
-
-    button {
-      background-color: #00ffcc;
-      color: #000;
-      font-weight: bold;
-      cursor: pointer;
-    }
-
-    .sessions {
-      display: grid;
-      grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
-      gap: 1rem;
-      margin-top: 2rem;
-    }
-
     .session-card {
-      background-color: var(--card-dark);
-      border-radius: 12px;
-      padding: 1rem;
       transition: transform 0.3s ease, background-color 0.3s ease;
-      animation: fadeIn 0.5s ease;
+      border-radius: 10px;
+      box-shadow: 0 4px 8px rgba(0,0,0,0.6);
     }
-
-    .session-card.active {
-      border: 2px solid #00ffcc;
+    .session-card:hover {
+      transform: scale(1.03);
     }
-
-    .session-card.red-alert {
-      background-color: #ff1a1a;
+    .critical {
+      background-color: #ff4c4c !important;
     }
-
-    @keyframes fadeIn {
-      from {
-        opacity: 0;
-        transform: translateY(10px);
-      }
-      to {
-        opacity: 1;
-        transform: translateY(0);
-      }
+    .card-container {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 1rem;
     }
-
-    @media screen and (max-width: 768px) {
-      .container {
-        padding: 1rem;
-      }
-
-      h1 {
-        font-size: 1.5rem;
-      }
-
-      input, select, button {
-        font-size: 0.9rem;
-      }
+    .modal-dark .modal-content {
+      background-color: #2c2c2c;
+      color: white;
     }
   </style>
 </head>
-
 <body>
-  <div class="container">
-    <h1>DD Gaming Zone - Session Tracker</h1>
-    <form id="sessionForm">
-      <label for="name">Name:</label>
-      <input type="text" id="name" required>
-
-      <label for="mobile">Mobile Number:</label>
-      <input type="tel" id="mobile" pattern="[0-9]{10}" required>
-
-      <label for="address">Address:</label>
-      <input type="text" id="address" required>
-
-      <label for="system">System Allocated:</label>
-      <select id="system" required>
-        <option value="PC 1">PC 1</option>
-        <option value="PC 2">PC 2</option>
-        <option value="PC 3">PC 3</option>
-        <option value="PC 4">PC 4</option>
-        <option value="PC 5">PC 5</option>
-        <option value="PC 6">PC 6</option>
-        <option value="PS5 1">PlayStation 1</option>
-        <option value="PS5 2">PlayStation 2</option>
-      </select>
-
-      <label><input type="checkbox" id="isChild"> Is the player under 12 years?</label>
-
-      <label for="duration">Time Allocated (in minutes):</label>
-      <input type="number" id="duration" min="10" max="180" required>
-
-      <button type="submit">Start Session</button>
+  <div class="container py-4">
+    <h1 class="text-center mb-4">🎮 DD Gaming Zone Tracker</h1>
+    <form id="trackerForm" class="row g-3">
+      <div class="col-md-4">
+        <input type="text" id="name" class="form-control" placeholder="Name" required />
+      </div>
+      <div class="col-md-4">
+        <input type="text" id="mobile" class="form-control" placeholder="Mobile Number" required />
+      </div>
+      <div class="col-md-4">
+        <input type="text" id="address" class="form-control" placeholder="Address" />
+      </div>
+      <div class="col-md-3">
+        <select id="system" class="form-select" required>
+          <option value="">Select System</option>
+          <option value="PC-1">PC-1</option>
+          <option value="PC-2">PC-2</option>
+          <option value="PC-3">PC-3</option>
+          <option value="PC-4">PC-4</option>
+          <option value="PC-5">PC-5</option>
+          <option value="PC-6">PC-6</option>
+          <option value="PS-1">PlayStation-1</option>
+          <option value="PS-2">PlayStation-2</option>
+        </select>
+      </div>
+      <div class="col-md-3">
+        <input type="number" id="allocatedTime" class="form-control" placeholder="Time in Minutes" required />
+      </div>
+      <div class="col-md-2">
+        <input type="checkbox" id="isChild" /> <label for="isChild">Below 12?</label>
+      </div>
+      <div class="col-md-2">
+        <button type="submit" class="btn btn-success w-100">Start Session</button>
+      </div>
     </form>
 
-    <div class="sessions" id="sessionsContainer"></div>
+    <hr class="my-4">
+    <div class="card-container" id="sessionContainer"></div>
   </div>
 
-  <script>
-    const form = document.getElementById('sessionForm');
-    const sessionsContainer = document.getElementById('sessionsContainer');
+  <!-- Approval Modal -->
+  <div class="modal fade" id="approvalModal" tabindex="-1" aria-labelledby="approvalModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+      <div class="modal-content modal-dark">
+        <div class="modal-header">
+          <h5 class="modal-title" id="approvalModalLabel">Record Parent Approval</h5>
+          <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+        </div>
+        <div class="modal-body">
+          <textarea class="form-control" id="approvalNotes" placeholder="Approval notes..." rows="3"></textarea>
+          <input type="number" class="form-control mt-2" id="extendMinutes" placeholder="Extend time in minutes" />
+        </div>
+        <div class="modal-footer">
+          <button class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+          <button class="btn btn-success" id="approveBtn">Approve</button>
+        </div>
+      </div>
+    </div>
+  </div>
 
-    form.addEventListener('submit', function (e) {
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+  <script>
+    let sessions = [];
+    const container = document.getElementById('sessionContainer');
+
+    document.getElementById('trackerForm').addEventListener('submit', function(e) {
       e.preventDefault();
 
       const name = document.getElementById('name').value;
       const mobile = document.getElementById('mobile').value;
       const address = document.getElementById('address').value;
       const system = document.getElementById('system').value;
+      const allocatedTime = parseInt(document.getElementById('allocatedTime').value);
       const isChild = document.getElementById('isChild').checked;
-      const duration = parseInt(document.getElementById('duration').value);
 
-      const card = document.createElement('div');
-      card.classList.add('session-card', 'active');
-
-      const startTime = new Date();
-      const endTime = new Date(startTime.getTime() + duration * 60000);
-
-      card.innerHTML = `
-        <h3>${name}</h3>
-        <p><strong>System:</strong> ${system}</p>
-        <p><strong>Time:</strong> ${duration} min</p>
-        <p><strong>Mobile:</strong> ${mobile}</p>
-        <p><strong>Status:</strong> <span class="time-left">Running...</span></p>
-        <p><strong>Amount:</strong> ₹${system.includes('PC') ? '100' : '150'}</p>
-        <button class="extend">+10 min</button>
-        <button class="close">Mark as Completed</button>
-      `;
-
-      const timeLeftSpan = card.querySelector('.time-left');
-
-      const interval = setInterval(() => {
-        const now = new Date();
-        const timeLeft = endTime - now;
-
-        if (timeLeft <= 0) {
-          clearInterval(interval);
-          card.classList.remove('active');
-          timeLeftSpan.innerText = 'Time Up!';
-          playSound();
-        } else {
-          const mins = Math.floor(timeLeft / 60000);
-          const secs = Math.floor((timeLeft % 60000) / 1000);
-          timeLeftSpan.innerText = `${mins}m ${secs}s`;
-
-          if (timeLeft <= (duration * 6000)) {
-            card.classList.add('red-alert');
-          }
-        }
-      }, 1000);
-
-      card.querySelector('.close').onclick = () => {
-        clearInterval(interval);
-        card.remove();
+      const session = {
+        id: Date.now(),
+        name, mobile, address, system,
+        allocatedTime,
+        startTime: new Date(),
+        isChild,
+        approved: false
       };
-
-      card.querySelector('.extend').onclick = () => {
-        endTime.setMinutes(endTime.getMinutes() + 10);
-        card.querySelector('.time-left').innerText += ' (Extended)';
-      };
-
-      sessionsContainer.appendChild(card);
-
-      form.reset();
+      sessions.push(session);
+      renderSessions();
     });
 
-    function playSound() {
-      const beep = new Audio('https://actions.google.com/sounds/v1/alarms/alarm_clock.ogg');
-      beep.play();
+    function renderSessions() {
+      container.innerHTML = '';
+      sessions.forEach((session) => {
+        const elapsed = (new Date() - new Date(session.startTime)) / 60000;
+        const remaining = session.allocatedTime - elapsed;
+        const percentLeft = (remaining / session.allocatedTime) * 100;
+
+        const div = document.createElement('div');
+        div.className = `p-3 session-card bg-dark text-white ${percentLeft <= 10 ? 'critical' : ''}`;
+        div.innerHTML = `
+          <h5>${session.name} (${session.system})</h5>
+          <p>Time Left: ${Math.max(0, Math.floor(remaining))} min</p>
+          <p>${session.isChild ? '👶 Child' : '🧑 Adult'} | ₹${session.system.startsWith('PC') ? 100 : 150}</p>
+          <button class="btn btn-warning btn-sm" onclick="openApproval(${session.id})">Record Approval</button>
+          <button class="btn btn-danger btn-sm" onclick="closeSession(${session.id})">Close</button>
+        `;
+        container.appendChild(div);
+
+        if (remaining <= 0 && !session.alerted) {
+          alert(`⏰ Time's up for ${session.name} on ${session.system}`);
+          session.alerted = true;
+        }
+      });
     }
+
+    function openApproval(id) {
+      const session = sessions.find(s => s.id === id);
+      if (!session) return;
+
+      const modal = new bootstrap.Modal(document.getElementById('approvalModal'));
+      modal.show();
+      document.getElementById('approveBtn').onclick = function () {
+        const extend = parseInt(document.getElementById('extendMinutes').value);
+        if (!isNaN(extend)) {
+          session.allocatedTime += extend;
+        }
+        session.approved = true;
+        modal.hide();
+        renderSessions();
+      };
+    }
+
+    function closeSession(id) {
+      sessions = sessions.filter(s => s.id !== id);
+      renderSessions();
+    }
+
+    setInterval(renderSessions, 10000);
   </script>
 </body>
-
 </html>
