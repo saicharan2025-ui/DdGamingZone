@@ -191,5 +191,66 @@
     window.onload = fetchActiveSessions;
     setInterval(fetchActiveSessions, 10000);
   </script>
+  <script>
+  // Global tracking of active sessions (assumes this is used already)
+  const activeSessions = [];
+
+  function notifyParentOnCompletion(name, mobile) {
+    const message = `Hello, this is Sri Vaishnava Gaming Zone.%0A%0AYour child ${name} has completed 1 hour of gameplay. Kindly let us know if you approve more time.`;
+    const url = `https://web.whatsapp.com/send?phone=91${mobile}&text=${message}`;
+
+    window.open(url, '_blank');
+  }
+
+  // Function to create session cards with timers (simplified sample)
+  function createSessionCard(session) {
+    const card = document.createElement("div");
+    card.className = "session-card";
+    
+    const name = session.name;
+    const mobile = session.mobile;
+    const isChild = session.isChild;
+    const system = session.systemNumber;
+    const startTime = new Date(session.startTime);
+    const duration = session.allocatedMinutes || 60; // fallback
+
+    let notified = false;
+    let endTime = new Date(startTime.getTime() + duration * 60000);
+
+    const timerDisplay = document.createElement("p");
+
+    const intervalId = setInterval(() => {
+      const now = new Date();
+      const remaining = endTime - now;
+
+      if (remaining <= 0) {
+        timerDisplay.textContent = `Session Complete`;
+
+        if (isChild && !notified) {
+          notifyParentOnCompletion(name, mobile);
+          alert(`Child ${name}'s session is over. Parent notified via WhatsApp. Awaiting permission to extend.`);
+          notified = true;
+        }
+
+        clearInterval(intervalId); // Stop timer updates
+      } else {
+        const minutes = Math.floor(remaining / 60000);
+        const seconds = Math.floor((remaining % 60000) / 1000);
+        timerDisplay.textContent = `Time Left: ${minutes}m ${seconds}s`;
+      }
+    }, 1000);
+
+    // Add info to card
+    card.innerHTML = `
+      <h3>${system}</h3>
+      <p>Name: ${name}</p>
+      <p>Mobile: ${mobile}</p>
+      <p>Child: ${isChild ? 'Yes 👶' : 'No 👤'}</p>
+    `;
+    card.appendChild(timerDisplay);
+
+    document.getElementById("sessions-container").appendChild(card);
+  }
+</script>
 </body>
 </html>
