@@ -116,22 +116,18 @@ app.post('/api/end-session', async (req, res) => {
 app.post('/api/end-session/:id', async (req, res) => {
   try {
     const session = await Session.findById(req.params.id);
-
-    if (!session) {
-      return res.status(404).json({ error: 'Session not found' });
-    }
+    if (!session) return res.status(404).send('Session not found');
 
     const now = new Date();
-    session.endTime = now;
-    session.isActive = false;
-    session.duration = Math.ceil((now - session.startTime) / 60000);
+    const start = new Date(session.startTime);
+    const durationMinutes = Math.floor((now - start) / (1000 * 60));
 
+    session.duration = durationMinutes;
     await session.save();
 
-    res.json({ message: 'Session ended successfully', session });
-  } catch (error) {
-    console.error('Error ending session:', error);
-    res.status(500).json({ error: 'Failed to end session' });
+    res.json({ message: 'Session ended', duration: durationMinutes });
+  } catch (err) {
+    res.status(500).send('Error ending session');
   }
 });
 
