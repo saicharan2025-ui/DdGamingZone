@@ -69,38 +69,60 @@
       padding: 20px;
     }
 
-    .session-card {
-      width: 200px;
-      height: 150px;
-      background: rgba(255, 255, 255, 0.1);
-      border-radius: 20px;
-      box-shadow: 0 4px 15px rgba(0, 0, 0, 0.5);
-      padding: 15px;
-      color: white;
-      text-align: center;
-      position: relative;
-      transition: transform 0.3s ease;
-      backdrop-filter: blur(8px);
-    }
+   .session-card {
+    display: inline-block;
+    width: 220px;
+    margin: 15px;
+    padding: 20px;
+    background: rgba(0, 0, 0, 0.8); /* Better contrast */
+    border-radius: 20px;
+    color: white;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.5);
+    text-align: center;
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+  }
 
-    .session-card:hover {
-      transform: scale(1.05);
-      box-shadow: 0 8px 25px rgba(0, 0, 0, 0.7);
-    }
+  .session-card:hover {
+    transform: scale(1.05);
+    box-shadow: 0 8px 20px rgba(255, 255, 255, 0.3);
+  }
 
-    .session-card .icon {
-      font-size: 30px;
-    }
+  .session-card h3 {
+    font-size: 1.3rem;
+    margin-bottom: 10px;
+  }
 
-    .session-card h3 {
-      margin: 10px 0 5px 0;
-      font-size: 18px;
-    }
+   .session-card p {
+    margin: 5px 0;
+    font-size: 0.95rem;
+  }
 
-    .session-card p {
-      margin: 2px 0;
-      font-size: 14px;
-    }
+  .session-card .end-btn {
+    margin-top: 10px;
+    padding: 5px 12px;
+    background-color: #ff4d4d;
+    border: none;
+    border-radius: 12px;
+    color: white;
+    cursor: pointer;
+    font-weight: bold;
+  }
+
+  .session-card .end-btn:hover {
+    background-color: #e60000;
+  }
+
+  #sessions-container {
+    padding: 20px;
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    background: rgba(255, 255, 255, 0.1);
+    border-radius: 16px;
+    backdrop-filter: blur(10px);
+    margin: 20px auto;
+    max-width: 90%;
+  }
   </style>
 </head>
 <body>
