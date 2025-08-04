@@ -1,3 +1,4 @@
+<!-- CLEANED & FIXED HTML FILE -->
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -60,13 +61,13 @@
       backdrop-filter: blur(10px);
       border-radius: 20px;
       padding: 1rem;
-      width: 220px;
+      width: 240px;
       transition: transform 0.3s ease, box-shadow 0.3s;
       box-shadow: 0 0 10px rgba(255,255,255,0.2);
     }
 
     .card:hover {
-      transform: scale(1.05);
+      transform: scale(1.07);
       box-shadow: 0 0 25px rgba(255,255,255,0.3);
     }
 
@@ -84,10 +85,16 @@
       font-size: 1.2rem;
       font-weight: bold;
       margin-top: 0.5rem;
+      color: #0f0;
     }
 
     .timer.warning {
-      color: red;
+      color: red !important;
+      animation: blink 1s step-start infinite;
+    }
+
+    @keyframes blink {
+      50% { opacity: 0.5; }
     }
 
     .whatsapp-button {
@@ -113,17 +120,17 @@
       <input type="tel" id="mobile" placeholder="Mobile Number" required />
       <input type="text" id="address" placeholder="Address" required />
       <label for="systemNumber">System Number:</label>
-<select id="systemNumber" name="systemNumber" required>
-  <option value="">-- Select System --</option>
-  <option value="PC1">PC1</option>
-  <option value="PC2">PC2</option>
-  <option value="PC3">PC3</option>
-  <option value="PC4">PC4</option>
-  <option value="PC5">PC5</option>
-  <option value="PC6">PC6</option>
-  <option value="Console1">Console1</option>
-  <option value="Console2">Console2</option>
-</select>
+      <select id="systemNumber" required>
+        <option value="">-- Select System --</option>
+        <option value="PC1">PC1</option>
+        <option value="PC2">PC2</option>
+        <option value="PC3">PC3</option>
+        <option value="PC4">PC4</option>
+        <option value="PC5">PC5</option>
+        <option value="PC6">PC6</option>
+        <option value="Console1">Console1</option>
+        <option value="Console2">Console2</option>
+      </select>
       <input type="number" id="duration" placeholder="Duration (minutes)" required min="1" />
       <label><input type="checkbox" id="isChild" /> Below 12 years?</label>
       <button type="submit">Start Session</button>
@@ -136,25 +143,40 @@
     const form = document.getElementById("sessionForm");
     const sessionsContainer = document.getElementById("sessionsContainer");
 
-    form.addEventListener("submit", (e) => {
+    form.addEventListener("submit", async (e) => {
       e.preventDefault();
-      const name = document.getElementById("name").value;
-      const mobile = document.getElementById("mobile").value;
-      const address = document.getElementById("address").value;
-      const system = document.getElementById("system").value;
+
+      const name = document.getElementById("name").value.trim();
+      const mobile = document.getElementById("mobile").value.trim();
+      const address = document.getElementById("address").value.trim();
+      const system = document.getElementById("systemNumber").value;
       const duration = parseInt(document.getElementById("duration").value);
       const isChild = document.getElementById("isChild").checked;
+
+      if (!name || !mobile || !address || !system || !duration) {
+        alert("Please fill in all required fields.");
+        return;
+      }
 
       const sessionId = Date.now();
       const endTime = new Date().getTime() + duration * 60 * 1000;
 
       createSessionCard({ name, mobile, address, system, duration, isChild, endTime, sessionId });
 
-      fetch("/api/save-session", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ name, mobile, address, system, duration, isChild, startTime: new Date(), sessionId }),
-      }).catch(console.error);
+      try {
+        const res = await fetch("/api/save-session", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ name, mobile, address, systemNumber: system, duration, isChild, sessionId })
+        });
+
+        const data = await res.json();
+        if (!res.ok) throw new Error(data.message || "Server error");
+
+      } catch (err) {
+        console.error("Save failed:", err);
+        alert("Failed to save session. Please check the server.");
+      }
 
       form.reset();
     });
@@ -164,7 +186,7 @@
       card.className = "card";
 
       card.innerHTML = `
-        <img src="https://cdn.dribbble.com/userupload/6508147/file/original-11794da09cf2fda821918b0be52877cf.jpg?format=webp&resize=400x300&vertical=center" />
+        <img src="https://cdn.dribbble.com/users/1708816/screenshots/15688780/media/f260fcbd31c14518f4b5ef9ddf7c03cf.png" />
         <p><strong>Name:</strong> ${name}</p>
         <p><strong>System:</strong> ${system}</p>
         <p><strong>Duration:</strong> ${duration} mins</p>
@@ -203,7 +225,8 @@
 
         timerEl.textContent = `${String(hours).padStart(2, '0')}:${String(minutes).padStart(2, '0')}:${String(seconds).padStart(2, '0')}`;
 
-        if (diff <= duration * 60 * 1000 * 0.1) {
+        const totalDurationMs = duration * 60 * 1000;
+        if (diff <= totalDurationMs * 0.1) {
           timerEl.classList.add("warning");
         }
       }, 1000);
