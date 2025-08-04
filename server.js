@@ -86,15 +86,32 @@ app.post("/api/end-session/:id", async (req, res) => {
   }
 });
 
-app.get("/api/active-sessions", async (req, res) => {
+// Add this to the top if not already
+const Session = require('./sessions.js');
+
+// GET active sessions
+app.get('/api/active-sessions', async (req, res) => {
   try {
-    const activeSessions = await Session.find({ isActive: true });
-    res.json({ sessions: activeSessions });
+    const sessions = await Session.find({ isActive: true });
+    res.json({ sessions });
   } catch (err) {
     console.error("Error fetching active sessions:", err);
-    res.status(500).json({ message: "Server Error" });
+    res.status(500).json({ error: 'Internal server error' });
   }
 });
+
+// POST to end a session
+app.post('/api/end-session/:id', async (req, res) => {
+  try {
+    const { id } = req.params;
+    await Session.findByIdAndUpdate(id, { isActive: false });
+    res.json({ message: "Session ended" });
+  } catch (err) {
+    console.error("Error ending session:", err);
+    res.status(500).json({ error: 'Internal server error' });
+  }
+});
+
 
 
 // Serve index.html on root
