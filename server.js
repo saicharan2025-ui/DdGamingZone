@@ -86,6 +86,17 @@ app.post("/api/end-session/:id", async (req, res) => {
   }
 });
 
+app.get("/api/active-sessions", async (req, res) => {
+  try {
+    const activeSessions = await Session.find({ isActive: true });
+    res.json({ sessions: activeSessions });
+  } catch (err) {
+    console.error("Error fetching active sessions:", err);
+    res.status(500).json({ message: "Server Error" });
+  }
+});
+
+
 // Serve index.html on root
 app.get("/", (req, res) => {
   res.sendFile(path.join(__dirname, "index.html"));
