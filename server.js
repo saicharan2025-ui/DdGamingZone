@@ -87,13 +87,22 @@ app.post("/api/end-session/:id", async (req, res) => {
 });
 
 // GET active sessions
+// server.js or routes file
 app.get('/api/active-sessions', async (req, res) => {
   try {
-    const sessions = await Session.find({ isActive: true });
-    res.json({ sessions });
+    const now = new Date();
+    const sessions = await Session.find();
+
+    const activeSessions = sessions.filter(s => {
+      const end = new Date(s.startTime);
+      end.setMinutes(end.getMinutes() + s.duration);
+      return end > now;
+    });
+
+    res.json(activeSessions);
   } catch (err) {
-    console.error("Error fetching active sessions:", err);
-    res.status(500).json({ error: 'Internal server error' });
+    console.error(err);
+    res.status(500).json({ error: 'Server error' });
   }
 });
 
