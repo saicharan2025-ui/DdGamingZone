@@ -104,135 +104,52 @@
     </thead>
     <tbody></tbody>
   </table>
+    <script>
+  async function fetchSessions() {
+    try {
+      const res = await fetch('/api/get-sessions');
+      const data = await res.json();
+      const today = new Date().toISOString().slice(0, 10);
 
-  <script>
-    document.addEventListener('DOMContentLoaded', () => {
-      const exportToday = document.getElementById('exportToday');
-      const exportLast3 = document.getElementById('exportLast3');
-      const exportIndividual3 = document.getElementById('exportIndividual3');
+      const todaySessions = data.filter(session => session.startTime.slice(0, 10) === today);
 
-      exportToday?.addEventListener('click', () => exportTableToCSV('sessionsTable', 'TodaySessions.csv'));
-      exportLast3?.addEventListener('click', () => fetchAndExportSessions(3, true));
-      exportIndividual3?.addEventListener('click', () => fetchAndExportSessions(3, false));
+      const tableBody = document.querySelector('#sessionTable tbody');
+      tableBody.innerHTML = ''; // Clear previous rows
 
-      fetchSessions();
-      fetchActiveSessions();
-    });
+      let totalAmount = 0;
 
-    function fetchSessions() {
-      fetch('/api/get-sessions')
-        .then(res => res.json())
-        .then(data => {
-          const tbody = document.querySelector('#sessionsTable tbody');
-          tbody.innerHTML = '';
+      todaySessions.forEach((session, index) => {
+        const start = new Date(session.startTime);
+        const durationHours = (session.duration / 60).toFixed(2); // Convert minutes to hours
+        const isConsole = session.systemNumber.toLowerCase().includes('console');
+        const rate = isConsole ? 150 : 100;
+        const amount = (rate * durationHours).toFixed(2);
 
-          data.forEach(session => {
-            const tr = document.createElement('tr');
-            tr.innerHTML = `
-              <td>${session.name}</td>
-              <td>${session.mobile}</td>
-              <td>${session.address || ''}</td>
-              <td>${session.systemNumber}</td>
-              <td>${(session.duration / 60).toFixed(2)}</td>
-              <td>₹${session.amount}</td>
-              <td>${new Date(session.startTime).toLocaleString()}</td>
-            `;
-            tbody.appendChild(tr);
-          });
-        })
-        .catch(err => console.error('Failed to fetch sessions:', err));
+        totalAmount += parseFloat(amount);
+
+        const row = document.createElement('tr');
+        row.innerHTML = `
+          <td>${index + 1}</td>
+          <td>${session.name}</td>
+          <td>${session.mobile}</td>
+          <td>${session.address}</td>
+          <td>${session.systemNumber}</td>
+          <td>${durationHours}</td>
+          <td>₹${amount}</td>
+          <td>${start.toLocaleTimeString()}</td>
+        `;
+        tableBody.appendChild(row);
+      });
+
+      // Show total amount
+      document.getElementById('totalAmount').innerHTML = `Total Amount Earned Today: ₹${totalAmount.toFixed(2)}`;
+
+    } catch (err) {
+      console.error("Failed to fetch sessions", err);
     }
+  }
 
-    function fetchActiveSessions() {
-      fetch('/api/active-sessions')
-        .then(res => res.json())
-        .then(data => {
-          const tbody = document.querySelector('#activeSessionsTable tbody');
-          tbody.innerHTML = '';
-
-          data.forEach(session => {
-            const tr = document.createElement('tr');
-            tr.innerHTML = `
-              <td>${session.name}</td>
-              <td>${session.mobile}</td>
-              <td>${session.address || ''}</td>
-              <td>${session.systemNumber}</td>
-              <td>${(session.duration / 60).toFixed(2)}</td>
-              <td>₹${session.amount}</td>
-              <td>${new Date(session.startTime).toLocaleString()}</td>
-            `;
-            tbody.appendChild(tr);
-          });
-        })
-        .catch(err => console.error('Failed to fetch active sessions:', err));
-    }
-
-    function fetchAndExportSessions(days, combined) {
-      fetch('/api/get-sessions')
-        .then(res => res.json())
-        .then(data => {
-          const now = new Date();
-          const sessions = data.filter(session => {
-            const sessionDate = new Date(session.startTime);
-            return now - sessionDate <= days * 24 * 60 * 60 * 1000;
-          });
-
-          if (combined) {
-            exportArrayToCSV(sessions, `Last${days}DaysCombined.csv`);
-          } else {
-            for (let i = 0; i < days; i++) {
-              const day = new Date();
-              day.setDate(day.getDate() - i);
-              const dateStr = day.toISOString().split('T')[0];
-              const daySessions = sessions.filter(session => new Date(session.startTime).toISOString().startsWith(dateStr));
-              exportArrayToCSV(daySessions, `${dateStr}_Sessions.csv`);
-            }
-          }
-        })
-        .catch(err => console.error('Failed to export:', err));
-    }
-
-    function exportTableToCSV(tableId, filename) {
-      const table = document.getElementById(tableId);
-      const rows = Array.from(table.querySelectorAll('tr'));
-      const csv = rows.map(row =>
-        Array.from(row.querySelectorAll('th,td')).map(cell => `"${cell.textContent}"`).join(',')
-      ).join('\n');
-
-      downloadCSV(csv, filename);
-    }
-
-    function exportArrayToCSV(data, filename) {
-      const headers = ['Name', 'Mobile', 'Address', 'System', 'Duration (hrs)', 'Amount', 'Start Time'];
-      const csv = [
-        headers.join(','),
-        ...data.map(session =>
-          [
-            session.name,
-            session.mobile,
-            session.address || '',
-            session.systemNumber,
-            (session.duration / 60).toFixed(2),
-            `₹${session.amount}`,
-            new Date(session.startTime).toLocaleString()
-          ].join(',')
-        )
-      ].join('\n');
-
-      downloadCSV(csv, filename);
-    }
-
-    function downloadCSV(csv, filename) {
-      const blob = new Blob([csv], { type: 'text/csv;charset=utf-8;' });
-      const link = document.createElement('a');
-      const url = URL.createObjectURL(blob);
-      link.setAttribute('href', url);
-      link.setAttribute('download', filename);
-      link.style.display = 'none';
-      document.body.appendChild(link);
-      link.click();
-      document.body.removeChild(link);
-    }
-  </script>
+  window.onload = fetchSessions;
+</script>
 </body>
 </html>
