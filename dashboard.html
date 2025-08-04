@@ -101,92 +101,82 @@
   </table>
 
   <script>
-    let allSessions = [];
+  async function fetchSessions(days = 1) {
+    try {
+      const response = await fetch(`/api/get-sessions?days=${days}`);
+      const data = await response.json();
 
-    async function fetchSessions() {
-      try {
-        const res = await fetch('/api/sessions');
-        const data = await res.json();
-        allSessions = data;
-        renderTable(data);
-      } catch (err) {
-        console.error('Error fetching sessions:', err);
-      }
-    }
+      const tableBody = document.getElementById("sessionTableBody");
+      tableBody.innerHTML = "";
 
-    function renderTable(data) {
-      const tbody = document.querySelector("#sessionTable tbody");
-      tbody.innerHTML = "";
-      data.forEach(session => {
-        const tr = document.createElement("tr");
-        tr.innerHTML = `
-          <td>${session.name}</td>
-          <td>${session.mobile}</td>
-          <td>${session.address || '-'}</td>
-          <td>${session.systemNumber}</td>
-          <td>${session.duration}</td>
-          <td>${new Date(session.startTime).toLocaleString()}</td>
-          <td>₹${session.amount || calculateAmount(session)}</td>
+      let totalEarnings = 0;
+      let totalHours = 0;
+
+      data.sessions.forEach((session, index) => {
+        const durationInHours = (session.duration / 60).toFixed(2);
+        const cost = session.systemNumber.toLowerCase().includes("console") ? 150 : 100;
+        const earning = cost;
+        totalEarnings += earning;
+        totalHours += parseFloat(durationInHours);
+
+        const row = `
+          <tr>
+            <td>${index + 1}</td>
+            <td>${session.name}</td>
+            <td>${session.mobile}</td>
+            <td>${session.address || '-'}</td>
+            <td>${session.systemNumber}</td>
+            <td>${durationInHours}</td>
+            <td>₹${earning}</td>
+            <td>${new Date(session.createdAt).toLocaleString()}</td>
+          </tr>
         `;
-        tbody.appendChild(tr);
+        tableBody.insertAdjacentHTML("beforeend", row);
       });
+
+      document.getElementById("summary").innerHTML = `
+        <p><strong>Total Bookings:</strong> ${data.sessions.length}</p>
+        <p><strong>Total Hours:</strong> ${totalHours.toFixed(2)}</p>
+        <p><strong>Total Earnings:</strong> ₹${totalEarnings}</p>
+      `;
+    } catch (err) {
+      console.error("Failed to fetch sessions", err);
     }
+  }
 
-    function calculateAmount(session) {
-      if (session.systemNumber?.toLowerCase().includes("console")) {
-        return session.duration * 2.5;
-      } else {
-        return session.duration * 1.67;
-      }
-    }
+  // Fetch today by default
+  fetchSessions();
 
-    function exportToday() {
-      const today = new Date().toDateString();
-      const todayData = allSessions.filter(s => new Date(s.startTime).toDateString() === today);
-      exportToExcel(todayData, "Today_Sessions");
-    }
+  document.getElementById("exportToday").addEventListener("click", () => exportTable("today"));
+  document.getElementById("exportLast3Days").addEventListener("click", () => exportTable("last3"));
+  document.getElementById("exportCombined").addEventListener("click", () => exportTable("combined"));
 
-    function exportPastDays(n) {
-      const now = new Date();
-      const filtered = allSessions.filter(s => {
-        const d = new Date(s.startTime);
-        const daysAgo = (now - d) / (1000 * 60 * 60 * 24);
-        return daysAgo <= n;
-      });
-      exportToExcel(filtered, `Last_${n}_Days_Sessions`);
-    }
+  function exportTable(type) {
+    const table = document.getElementById("sessionTable");
+    const rows = Array.from(table.rows);
+    let csvContent = "";
 
-    function exportIndividualDays(n) {
-      const now = new Date();
-      for (let i = 0; i < n; i++) {
-        const target = new Date(now);
-        target.setDate(now.getDate() - i);
-        const dayStr = target.toDateString();
-        const dayData = allSessions.filter(s => new Date(s.startTime).toDateString() === dayStr);
-        if (dayData.length) {
-          exportToExcel(dayData, `Session_${dayStr.replace(/ /g, "_")}`);
-        }
-      }
-    }
+    rows.forEach(row => {
+      const cols = Array.from(row.cells).map(cell => `"${cell.innerText}"`);
+      csvContent += cols.join(",") + "\n";
+    });
 
-    function exportToExcel(data, filename) {
-      const exportData = data.map(s => ({
-        Name: s.name,
-        Mobile: s.mobile,
-        Address: s.address || '',
-        System: s.systemNumber,
-        Duration: s.duration,
-        StartTime: new Date(s.startTime).toLocaleString(),
-        Amount: `₹${s.amount || calculateAmount(s)}`
-      }));
+    const blob = new Blob([csvContent], { type: "text/csv;charset=utf-8;" });
+    const url = URL.createObjectURL(blob);
+    const link = document.createElement("a");
 
-      const ws = XLSX.utils.json_to_sheet(exportData);
-      const wb = XLSX.utils.book_new();
-      XLSX.utils.book_append_sheet(wb, ws, "Sessions");
-      XLSX.writeFile(wb, `${filename}.xlsx`);
-    }
+    const dateStr = new Date().toISOString().split("T")[0];
+    link.setAttribute("href", url);
+    link.setAttribute("download", `gaming_sessions_${type}_${dateStr}.csv`);
+    link.style.display = "none";
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+  }
 
-    fetchSessions();
-  </script>
+  document.getElementById("goHome").addEventListener("click", () => {
+    window.location.href = "/";
+  });
+</script>
 </body>
 </html>
