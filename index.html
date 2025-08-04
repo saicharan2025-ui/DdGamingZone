@@ -276,34 +276,54 @@
 
   </script>
   <script>
-document.getElementById("sessionForm").addEventListener("submit", async function (e) {
-  e.preventDefault();
+  document.addEventListener("DOMContentLoaded", () => {
+    const form = document.getElementById("sessionForm");
 
-  const sessionData = {
-    name: document.getElementById("name").value,
-    mobile: document.getElementById("mobile").value,
-    address: document.getElementById("address").value,
-    systemNumber: document.getElementById("systemNumber").value,
-    isChild: document.getElementById("isChild").checked,
-    startTime: new Date(),
-    durationMinutes: parseInt(document.getElementById("duration").value),
-  };
+    if (!form) {
+      console.error("Form not found!");
+      return;
+    }
 
-  try {
-    const res = await fetch("/api/save-session", {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify(sessionData),
+    form.addEventListener("submit", async (e) => {
+      e.preventDefault();
+
+      const name = document.getElementById("name")?.value?.trim();
+      const mobile = document.getElementById("mobile")?.value?.trim();
+      const address = document.getElementById("address")?.value?.trim();
+      const systemNumber = document.getElementById("systemNumber")?.value?.trim();
+      const isChild = document.getElementById("isChild")?.checked;
+      const duration = parseInt(document.getElementById("duration")?.value);
+
+      if (!name || !mobile || !address || !systemNumber || !duration) {
+        alert("Please fill in all required fields.");
+        return;
+      }
+
+      const sessionData = {
+        name,
+        mobile,
+        address,
+        systemNumber,
+        isChild,
+        startTime: new Date(),
+        durationMinutes: duration,
+      };
+
+      try {
+        const res = await fetch("/api/save-session", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify(sessionData),
+        });
+
+        const result = await res.json();
+        alert(result.message || "Session saved");
+      } catch (err) {
+        console.error("Error:", err);
+        alert("Failed to save session.");
+      }
     });
-
-    const result = await res.json();
-    alert(result.message || "Session saved");
-    console.log("Session saved:", result);
-  } catch (err) {
-    alert("Failed to save session");
-    console.error("Error:", err);
-  }
-});
+  });
 </script>
 
 </body>
