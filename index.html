@@ -180,34 +180,6 @@
   <audio id="alertSound" src="https://cdn.pixabay.com/audio/2021/09/20/audio_04b84c3a74.mp3"></audio>
 
   <script>
-    <script>
-  document.addEventListener("DOMContentLoaded", () => {
-    const form = document.getElementById("sessionForm");
-    const cardsContainer = document.getElementById('cards');
-    const alertSound = document.getElementById('alertSound');
-
-    const formatTime = (seconds) => {
-      const h = Math.floor(seconds / 3600).toString().padStart(2, '0');
-      const m = Math.floor((seconds % 3600) / 60).toString().padStart(2, '0');
-      const s = (seconds % 60).toString().padStart(2, '0');
-      return `${h}:${m}:${s}`;
-    };
-
-    form.addEventListener("submit", async (e) => {
-      e.preventDefault();
-
-      const name = document.getElementById("name")?.value?.trim();
-      const mobile = document.getElementById("mobile")?.value?.trim();
-      const address = document.getElementById("address")?.value?.trim();
-      const system = document.getElementById("system")?.value?.trim();
-      const isChild = document.getElementById("isChild")?.checked;
-      const duration = parseInt(document.getElementById("duration")?.value);
-
-      if (!name || !mobile || !system || !duration) {
-        alert("Please fill in all required fields.");
-        return;
-      }
-
       // Save to backend
       try {
         const res = await fetch("https://ddgamingzone.onrender.com/api/save-session", {
