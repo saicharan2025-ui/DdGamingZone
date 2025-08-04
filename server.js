@@ -32,8 +32,8 @@ app.post('/api/start-session', async (req, res) => {
       mobile: req.body.mobile,
       address: req.body.address,
       systemNumber: req.body.systemNumber,
-      isChild: req.body.isChild,
-      startTime: new Date(),        // ⏱ Set current time
+      isChild: req.body.isChild,//
+      allocatedMinutes: req.body.allocatedMinutes
       isActive: true
     };
 
