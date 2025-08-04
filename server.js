@@ -24,7 +24,7 @@ db.once("open", () => console.log("MongoDB connected successfully"));
 // Routes
 app.post("/api/save-session", async (req, res) => {
   try {
-    const Session = require("./Session");
+    const Session = require("./sessions.js");
     const newSession = new Session(req.body);
     await newSession.save();
     res.status(200).json({ message: "Session saved successfully" });
