@@ -21,10 +21,12 @@ const db = mongoose.connection;
 db.on("error", console.error.bind(console, "MongoDB connection error:"));
 db.once("open", () => console.log("MongoDB connected successfully"));
 
-// Routes
+// Import model
+const Session = require("./sessions.js");
+
+// Save a new session
 app.post("/api/save-session", async (req, res) => {
   try {
-    const Session = require("./sessions.js");
     const newSession = new Session(req.body);
     await newSession.save();
     res.status(200).json({ message: "Session saved successfully" });
@@ -34,17 +36,13 @@ app.post("/api/save-session", async (req, res) => {
   }
 });
 
-const Session = require("./sessions.js"); // Make sure this is required at the top
-
+// Get today's sessions
 app.get("/api/today-sessions", async (req, res) => {
   try {
     const startOfDay = new Date();
     startOfDay.setHours(0, 0, 0, 0);
 
-    const sessions = await Session.find({
-      startTime: { $gte: startOfDay }
-    });
-
+    const sessions = await Session.find({ startTime: { $gte: startOfDay } });
     res.json(sessions);
   } catch (err) {
     console.error("Error fetching today's sessions:", err);
@@ -52,7 +50,7 @@ app.get("/api/today-sessions", async (req, res) => {
   }
 });
 
-// Get sessions for today or past days
+// Get sessions for past X days (default: 1)
 app.get("/api/get-sessions", async (req, res) => {
   try {
     const days = parseInt(req.query.days || "1");
@@ -60,57 +58,43 @@ app.get("/api/get-sessions", async (req, res) => {
     fromDate.setDate(fromDate.getDate() - days);
 
     const sessions = await Session.find({ createdAt: { $gte: fromDate } }).sort({ createdAt: -1 });
-    res.json({ sessions });
+    res.json(sessions); // 🛠️ Return just the array
   } catch (error) {
     console.error("Error fetching sessions:", error);
     res.status(500).json({ message: "Server Error" });
   }
 });
 
+// Get active sessions
+app.get("/api/active-sessions", async (req, res) => {
+  try {
+    const activeSessions = await Session.find({ isActive: true });
+    res.json(activeSessions);
+  } catch (err) {
+    console.error("Error fetching active sessions:", err);
+    res.status(500).json({ error: "Failed to fetch active sessions" });
+  }
+});
+
+// End a session
 app.post("/api/end-session/:id", async (req, res) => {
   try {
-    const sessionId = req.params.id;
-    const session = await Session.findByIdAndUpdate(sessionId, {
-      isActive: false,
-      endTime: new Date(),
-    }, { new: true });
+    const session = await Session.findByIdAndUpdate(
+      req.params.id,
+      { isActive: false, endTime: new Date() },
+      { new: true }
+    );
 
     if (!session) {
       return res.status(404).json({ message: "Session not found" });
     }
 
-    res.status(200).json({ message: "Session ended", session });
+    res.json({ message: "Session ended", session });
   } catch (err) {
     console.error("Error ending session:", err);
     res.status(500).json({ message: "Server Error" });
   }
 });
-
-// sessions.js (Express router file)
-app.get('/api/get-sessions', async (req, res) => {
-  try {
-    const sessions = await Session.find({});
-    res.json(sessions); // ✅ Ensure this is a JSON array
-  } catch (err) {
-    console.error(err);
-    res.status(500).json({ error: 'Failed to fetch sessions' });
-  }
-});
-
-
-// POST to end a session
-app.post('/api/end-session/:id', async (req, res) => {
-  try {
-    const { id } = req.params;
-    await Session.findByIdAndUpdate(id, { isActive: false });
-    res.json({ message: "Session ended" });
-  } catch (err) {
-    console.error("Error ending session:", err);
-    res.status(500).json({ error: 'Internal server error' });
-  }
-});
-
-
 
 // Serve index.html on root
 app.get("/", (req, res) => {
