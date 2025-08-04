@@ -28,12 +28,12 @@ const Session = require("./sessions.js");
 app.post('/api/start-session', async (req, res) => {
   try {
     const sessionData = {
-      playerName: req.body.name,
+      name: req.body.name,
       mobile: req.body.mobile,
       address: req.body.address,
       systemNumber: req.body.systemNumber,
       isChild: req.body.isChild,//
-      allocatedMinutes: req.body.allocatedMinutes
+      allocatedMinutes: req.body.allocatedMinutes,
       isActive: true
     };
 
