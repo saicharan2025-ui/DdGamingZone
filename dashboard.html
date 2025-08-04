@@ -1,0 +1,153 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Gaming Zone Dashboard</title>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.17.5/xlsx.full.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+  <style>
+    body {
+      background: #0e0e0e;
+      color: #fff;
+      font-family: 'Segoe UI', sans-serif;
+      padding: 20px;
+    }
+
+    h1 {
+      text-align: center;
+      color: #00ffc8;
+    }
+
+    .summary {
+      margin: 20px 0;
+      display: flex;
+      justify-content: space-around;
+      font-size: 1.2rem;
+    }
+
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      background-color: #1e1e1e;
+      border: 1px solid #333;
+    }
+
+    th, td {
+      padding: 10px;
+      border: 1px solid #444;
+      text-align: center;
+    }
+
+    th {
+      background-color: #333;
+      color: #00ffc8;
+    }
+
+    .export-buttons {
+      margin: 20px 0;
+      text-align: center;
+    }
+
+    button {
+      background-color: #00ffc8;
+      color: #000;
+      border: none;
+      padding: 10px 20px;
+      margin: 0 10px;
+      cursor: pointer;
+      font-weight: bold;
+      border-radius: 10px;
+    }
+
+    button:hover {
+      background-color: #00bfa6;
+    }
+  </style>
+</head>
+<body>
+  <h1>Today's Bookings Summary</h1>
+
+  <div class="summary">
+    <div>Total Sessions: <span id="totalSessions">0</span></div>
+    <div>Total Hours: <span id="totalHours">0</span> hrs</div>
+    <div>Total Amount: ₹<span id="totalAmount">0</span></div>
+  </div>
+
+  <div class="export-buttons">
+    <button onclick="exportToExcel()">Export to Excel</button>
+    <button onclick="exportToPDF()">Export to PDF</button>
+  </div>
+
+  <table id="bookingTable">
+    <thead>
+      <tr>
+        <th>Name</th>
+        <th>Mobile</th>
+        <th>System</th>
+        <th>Duration (hrs)</th>
+        <th>Amount (₹)</th>
+        <th>Start Time</th>
+      </tr>
+    </thead>
+    <tbody id="tableBody">
+      <!-- rows will be inserted here -->
+    </tbody>
+  </table>
+
+  <script>
+    async function loadTodayBookings() {
+      try {
+        const response = await fetch('/api/today-sessions');
+        const data = await response.json();
+        const tbody = document.getElementById('tableBody');
+
+        let totalAmount = 0, totalHours = 0;
+        document.getElementById('totalSessions').textContent = data.length;
+
+        data.forEach(session => {
+          const row = document.createElement('tr');
+
+          const amount = session.systemNumber.includes("console") ? 150 : 100;
+          const hours = Number(session.duration) || 1;
+
+          totalAmount += amount;
+          totalHours += hours;
+
+          row.innerHTML = `
+            <td>${session.name}</td>
+            <td>${session.mobile}</td>
+            <td>${session.systemNumber}</td>
+            <td>${hours}</td>
+            <td>${amount}</td>
+            <td>${new Date(session.startTime).toLocaleString()}</td>
+          `;
+          tbody.appendChild(row);
+        });
+
+        document.getElementById('totalAmount').textContent = totalAmount;
+        document.getElementById('totalHours').textContent = totalHours;
+
+      } catch (err) {
+        console.error("Error fetching today's sessions:", err);
+      }
+    }
+
+    function exportToExcel() {
+      const table = document.getElementById('bookingTable');
+      const workbook = XLSX.utils.table_to_book(table, {sheet: "Bookings"});
+      XLSX.writeFile(workbook, `Today's Bookings.xlsx`);
+    }
+
+    async function exportToPDF() {
+      const { jsPDF } = window.jspdf;
+      const doc = new jsPDF();
+      doc.text("Today's Gaming Zone Bookings", 20, 10);
+      doc.autoTable({ html: '#bookingTable', startY: 20 });
+      doc.save("Today's Bookings.pdf");
+    }
+
+    loadTodayBookings();
+  </script>
+</body>
+</html>
