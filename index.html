@@ -112,7 +112,18 @@
       <input type="text" id="name" placeholder="Player Name" required />
       <input type="tel" id="mobile" placeholder="Mobile Number" required />
       <input type="text" id="address" placeholder="Address" required />
-      <input type="number" id="system" placeholder="System No." required min="1" />
+      <label for="systemNumber">System Number:</label>
+<select id="systemNumber" name="systemNumber" required>
+  <option value="">-- Select System --</option>
+  <option value="PC1">PC1</option>
+  <option value="PC2">PC2</option>
+  <option value="PC3">PC3</option>
+  <option value="PC4">PC4</option>
+  <option value="PC5">PC5</option>
+  <option value="PC6">PC6</option>
+  <option value="Console1">Console1</option>
+  <option value="Console2">Console2</option>
+</select>
       <input type="number" id="duration" placeholder="Duration (minutes)" required min="1" />
       <label><input type="checkbox" id="isChild" /> Below 12 years?</label>
       <button type="submit">Start Session</button>
