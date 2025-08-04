@@ -3,151 +3,190 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>Gaming Zone Dashboard</title>
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.17.5/xlsx.full.min.js"></script>
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+  <title>DD's Gaming Zone Dashboard</title>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
   <style>
     body {
-      background: #0e0e0e;
+      font-family: Arial, sans-serif;
+      background: #111;
       color: #fff;
-      font-family: 'Segoe UI', sans-serif;
+      margin: 0;
       padding: 20px;
     }
 
     h1 {
       text-align: center;
-      color: #00ffc8;
-    }
-
-    .summary {
-      margin: 20px 0;
-      display: flex;
-      justify-content: space-around;
-      font-size: 1.2rem;
+      margin-bottom: 30px;
     }
 
     table {
       width: 100%;
       border-collapse: collapse;
-      background-color: #1e1e1e;
-      border: 1px solid #333;
+      margin-top: 20px;
+      background: #222;
     }
 
     th, td {
-      padding: 10px;
       border: 1px solid #444;
+      padding: 10px;
       text-align: center;
     }
 
     th {
-      background-color: #333;
-      color: #00ffc8;
-    }
-
-    .export-buttons {
-      margin: 20px 0;
-      text-align: center;
+      background: #333;
     }
 
     button {
-      background-color: #00ffc8;
-      color: #000;
+      padding: 10px 16px;
+      margin: 10px;
       border: none;
-      padding: 10px 20px;
-      margin: 0 10px;
+      border-radius: 6px;
       cursor: pointer;
       font-weight: bold;
-      border-radius: 10px;
+      background: #00ffc8;
+      color: #000;
+      transition: 0.3s;
     }
 
     button:hover {
+      background: #00bfa6;
+    }
+
+    .top-bar {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      flex-wrap: wrap;
+    }
+
+    .home-btn {
+      text-decoration: none;
+      background: #00ffc8;
+      color: black;
+      padding: 10px 16px;
+      border-radius: 8px;
+      font-weight: bold;
+    }
+
+    .home-btn:hover {
       background-color: #00bfa6;
     }
   </style>
 </head>
 <body>
-  <h1>Today's Bookings Summary</h1>
-
-  <div class="summary">
-    <div>Total Sessions: <span id="totalSessions">0</span></div>
-    <div>Total Hours: <span id="totalHours">0</span> hrs</div>
-    <div>Total Amount: ₹<span id="totalAmount">0</span></div>
+  <div class="top-bar">
+    <h1>📊 DD's Gaming Zone Dashboard</h1>
+    <a href="index.html" class="home-btn">🏠 Home</a>
   </div>
 
-  <div class="export-buttons">
-    <button onclick="exportToExcel()">Export to Excel</button>
-    <button onclick="exportToPDF()">Export to PDF</button>
+  <div style="text-align: center;">
+    <button onclick="exportToday()">Export Today's Data</button>
+    <button onclick="exportPastDays(3)">Export Past 3 Days Combined</button>
+    <button onclick="exportIndividualDays(3)">Export Past 3 Days Individually</button>
   </div>
 
-  <table id="bookingTable">
+  <table id="sessionTable">
     <thead>
       <tr>
         <th>Name</th>
         <th>Mobile</th>
+        <th>Address</th>
         <th>System</th>
-        <th>Duration (hrs)</th>
-        <th>Amount (₹)</th>
+        <th>Duration (min)</th>
         <th>Start Time</th>
+        <th>Amount</th>
       </tr>
     </thead>
-    <tbody id="tableBody">
-      <!-- rows will be inserted here -->
-    </tbody>
+    <tbody></tbody>
   </table>
 
   <script>
-    async function loadTodayBookings() {
+    let allSessions = [];
+
+    async function fetchSessions() {
       try {
-        const response = await fetch('/api/today-sessions');
-        const data = await response.json();
-        const tbody = document.getElementById('tableBody');
-
-        let totalAmount = 0, totalHours = 0;
-        document.getElementById('totalSessions').textContent = data.length;
-
-        data.forEach(session => {
-          const row = document.createElement('tr');
-
-          const amount = session.systemNumber.includes("console") ? 150 : 100;
-          const hours = Number(session.duration) || 1;
-
-          totalAmount += amount;
-          totalHours += hours;
-
-          row.innerHTML = `
-            <td>${session.name}</td>
-            <td>${session.mobile}</td>
-            <td>${session.systemNumber}</td>
-            <td>${hours}</td>
-            <td>${amount}</td>
-            <td>${new Date(session.startTime).toLocaleString()}</td>
-          `;
-          tbody.appendChild(row);
-        });
-
-        document.getElementById('totalAmount').textContent = totalAmount;
-        document.getElementById('totalHours').textContent = totalHours;
-
+        const res = await fetch('/api/sessions');
+        const data = await res.json();
+        allSessions = data;
+        renderTable(data);
       } catch (err) {
-        console.error("Error fetching today's sessions:", err);
+        console.error('Error fetching sessions:', err);
       }
     }
 
-    function exportToExcel() {
-      const table = document.getElementById('bookingTable');
-      const workbook = XLSX.utils.table_to_book(table, {sheet: "Bookings"});
-      XLSX.writeFile(workbook, `Today's Bookings.xlsx`);
+    function renderTable(data) {
+      const tbody = document.querySelector("#sessionTable tbody");
+      tbody.innerHTML = "";
+      data.forEach(session => {
+        const tr = document.createElement("tr");
+        tr.innerHTML = `
+          <td>${session.name}</td>
+          <td>${session.mobile}</td>
+          <td>${session.address || '-'}</td>
+          <td>${session.systemNumber}</td>
+          <td>${session.duration}</td>
+          <td>${new Date(session.startTime).toLocaleString()}</td>
+          <td>₹${session.amount || calculateAmount(session)}</td>
+        `;
+        tbody.appendChild(tr);
+      });
     }
 
-    async function exportToPDF() {
-      const { jsPDF } = window.jspdf;
-      const doc = new jsPDF();
-      doc.text("Today's Gaming Zone Bookings", 20, 10);
-      doc.autoTable({ html: '#bookingTable', startY: 20 });
-      doc.save("Today's Bookings.pdf");
+    function calculateAmount(session) {
+      if (session.systemNumber?.toLowerCase().includes("console")) {
+        return session.duration * 2.5;
+      } else {
+        return session.duration * 1.67;
+      }
     }
 
-    loadTodayBookings();
+    function exportToday() {
+      const today = new Date().toDateString();
+      const todayData = allSessions.filter(s => new Date(s.startTime).toDateString() === today);
+      exportToExcel(todayData, "Today_Sessions");
+    }
+
+    function exportPastDays(n) {
+      const now = new Date();
+      const filtered = allSessions.filter(s => {
+        const d = new Date(s.startTime);
+        const daysAgo = (now - d) / (1000 * 60 * 60 * 24);
+        return daysAgo <= n;
+      });
+      exportToExcel(filtered, `Last_${n}_Days_Sessions`);
+    }
+
+    function exportIndividualDays(n) {
+      const now = new Date();
+      for (let i = 0; i < n; i++) {
+        const target = new Date(now);
+        target.setDate(now.getDate() - i);
+        const dayStr = target.toDateString();
+        const dayData = allSessions.filter(s => new Date(s.startTime).toDateString() === dayStr);
+        if (dayData.length) {
+          exportToExcel(dayData, `Session_${dayStr.replace(/ /g, "_")}`);
+        }
+      }
+    }
+
+    function exportToExcel(data, filename) {
+      const exportData = data.map(s => ({
+        Name: s.name,
+        Mobile: s.mobile,
+        Address: s.address || '',
+        System: s.systemNumber,
+        Duration: s.duration,
+        StartTime: new Date(s.startTime).toLocaleString(),
+        Amount: `₹${s.amount || calculateAmount(s)}`
+      }));
+
+      const ws = XLSX.utils.json_to_sheet(exportData);
+      const wb = XLSX.utils.book_new();
+      XLSX.utils.book_append_sheet(wb, ws, "Sessions");
+      XLSX.writeFile(wb, `${filename}.xlsx`);
+    }
+
+    fetchSessions();
   </script>
 </body>
 </html>
