@@ -239,5 +239,47 @@
       }
     });
   </script>
+  <script>
+  async function fetchActiveSessions() {
+    try {
+      const res = await fetch('/api/active-sessions');
+      const data = await res.json();
+
+      // Clear existing cards
+      const sessionContainer = document.getElementById("sessionCardsContainer");
+      sessionContainer.innerHTML = "";
+
+      // Re-render active session cards
+      data.sessions.forEach(session => {
+        const card = document.createElement("div");
+        card.className = "session-card"; // use your CSS class here
+
+        card.innerHTML = `
+          <h3>${session.name}</h3>
+          <p>System: ${session.systemNumber}</p>
+          <p>Time: ${session.duration} min</p>
+          <p>Start: ${new Date(session.startTime).toLocaleTimeString()}</p>
+          <button onclick="endSession('${session._id}')">End Session</button>
+        `;
+        sessionContainer.appendChild(card);
+      });
+    } catch (error) {
+      console.error("Error fetching active sessions:", error);
+    }
+  }
+
+  async function endSession(id) {
+    try {
+      await fetch(`/api/end-session/${id}`, { method: "POST" });
+      fetchActiveSessions(); // refresh list
+    } catch (err) {
+      console.error("Error ending session:", err);
+    }
+  }
+
+  // Fetch every 10 seconds
+  setInterval(fetchActiveSessions, 10000);
+  window.onload = fetchActiveSessions;
+</script>
 </body>
 </html>
