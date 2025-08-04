@@ -34,6 +34,25 @@ app.post("/api/save-session", async (req, res) => {
   }
 });
 
+const Session = require("./sessions.js"); // Make sure this is required at the top
+
+app.get("/api/today-sessions", async (req, res) => {
+  try {
+    const startOfDay = new Date();
+    startOfDay.setHours(0, 0, 0, 0);
+
+    const sessions = await Session.find({
+      startTime: { $gte: startOfDay }
+    });
+
+    res.json(sessions);
+  } catch (err) {
+    console.error("Error fetching today's sessions:", err);
+    res.status(500).json({ message: "Server error" });
+  }
+});
+
+
 // Serve index.html on root
 app.get("/", (req, res) => {
   res.sendFile(path.join(__dirname, "index.html"));
