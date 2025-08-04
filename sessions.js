@@ -17,12 +17,9 @@ const sessionSchema = new mongoose.Schema({
     type: String,
     required: true,
     enum: [
-      enum: [
   'PC1', 'PC2', 'PC3', 'PC4', 'PC5', 'PC6',
   'CONSOLE1', 'CONSOLE2'
-]
-
-    ]
+    ],
   },
   duration: {
     type: Number, // in minutes
