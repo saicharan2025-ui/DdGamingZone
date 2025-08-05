@@ -170,7 +170,7 @@
     }
 
     function notifyParent(mobile, name) {
-      const message = `Hello, your child ${name} has completed their 1 hour session at the Gaming Zone. Please confirm to extend.`;
+      const message = `Hello, We are from DD's Play Arena. Your child ${name} has completed their 1 hour session at the Gaming Zone. Please confirm to extend(By default we extend 60 min if replied yes).`;
       const encoded = encodeURIComponent(message);
       window.open(`https://web.whatsapp.com/send?phone=91${mobile}&text=${encoded}`, '_blank');
     }
