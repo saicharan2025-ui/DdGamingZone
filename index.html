@@ -9,7 +9,7 @@
       margin: 0;
       padding: 0;
       font-family: 'Segoe UI', sans-serif;
-      background-image: url('https://png.pngtree.com/thumb_back/fh260/background/20250524/pngtree-dark-themed-chess-composition-with-glowing-metal-king-image_17338044.jpg'); /* ✅ Background image restored */
+      background-image: url('https://png.pngtree.com/thumb_back/fh260/background/20250524/pngtree-dark-themed-chess-composition-with-glowing-metal-king-image_17338044.jpg');
       background-size: cover;
       background-position: center;
       color: white;
@@ -21,6 +21,42 @@
       display: flex;
       justify-content: space-between;
       align-items: center;
+    }
+
+    .container {
+      padding: 1rem;
+      max-width: 800px;
+      margin: auto;
+    }
+
+    form {
+      background-color: rgba(0, 0, 0, 0.7);
+      padding: 20px;
+      border-radius: 10px;
+      margin-bottom: 2rem;
+    }
+
+    label {
+      display: block;
+      margin-top: 10px;
+    }
+
+    input, select {
+      width: 100%;
+      padding: 8px;
+      margin-top: 5px;
+      border-radius: 5px;
+      border: none;
+    }
+
+    button {
+      background-color: #2196f3;
+      color: white;
+      border: none;
+      padding: 0.5rem 1rem;
+      border-radius: 5px;
+      margin-top: 10px;
+      cursor: pointer;
     }
 
     .session-card {
@@ -39,20 +75,6 @@
       background-color: rgba(255, 0, 0, 0.6);
     }
 
-    .container {
-      padding: 1rem;
-    }
-
-    button {
-      background-color: #2196f3;
-      color: white;
-      border: none;
-      padding: 0.5rem 1rem;
-      border-radius: 5px;
-      margin-right: 5px;
-      cursor: pointer;
-    }
-
     .whatsapp-btn {
       background-color: #25d366;
       border: none;
@@ -60,6 +82,7 @@
       border-radius: 5px;
       color: white;
       cursor: pointer;
+      margin-left: 5px;
     }
 
     .nav-btn {
@@ -75,16 +98,54 @@
 <body>
   <header>
     <h2>🎮 DD's Play Arena</h2>
-    <a class="nav-btn" href="dashboard.html">Go to Dashboard</a> <!-- ✅ Dashboard button -->
+    <a class="nav-btn" href="dashboard.html">Go to Dashboard</a>
   </header>
 
-  <div class="container" id="sessionContainer">
-    <!-- Session cards will be injected here -->
+  <div class="container">
+    <!-- ✅ Form to Start Session -->
+    <form id="sessionForm">
+      <h3>Start a New Session</h3>
+      <label>Name:</label>
+      <input type="text" name="name" required />
+
+      <label>Mobile Number:</label>
+      <input type="tel" name="mobile" required />
+
+      <label>Address:</label>
+      <input type="text" name="address" required />
+
+      <label>System Number:</label>
+      <select name="systemNumber" required>
+        <option value="">Select</option>
+        <option value="PC1">PC1</option>
+        <option value="PC2">PC2</option>
+        <option value="PC3">PC3</option>
+        <option value="PC4">PC4</option>
+        <option value="PC5">PC5</option>
+        <option value="PC6">PC6</option>
+        <option value="PS1">CONSOLE1</option>
+        <option value="PS2">CONSOLE2</option>
+      </select>
+
+      <label>
+        <input type="checkbox" name="isChild" />
+        Under 12 years?
+      </label>
+
+      <label>Allocated Minutes:</label>
+      <input type="number" name="allocatedMinutes" min="1" required />
+
+      <button type="submit">Start Session</button>
+    </form>
+
+    <!-- ✅ Active Sessions -->
+    <div id="sessionContainer"></div>
   </div>
 
   <script>
     const container = document.getElementById("sessionContainer");
 
+    // Fetch sessions
     async function fetchSessions() {
       try {
         const res = await fetch("/api/active-sessions");
@@ -98,13 +159,13 @@
     function renderSessions(sessions) {
       container.innerHTML = '';
       sessions.forEach((session) => {
-        const allocated = session.duration || 0;
+        const allocated = session.allocatedMinutes || 0;
         const start = new Date(session.startTime);
         const now = new Date();
         const used = Math.floor((now - start) / 60000);
         const remaining = allocated - used;
 
-        // Color logic
+        // Card Color Logic
         let className = "session-card";
         if (allocated > 0) {
           const percentLeft = (remaining / allocated) * 100;
@@ -150,12 +211,10 @@
 
     async function endSession(id) {
       try {
-        const res = await fetch(`/api/end-session/${id}`, {
-          method: "POST",
-        });
+        const res = await fetch(`/api/end-session/${id}`, { method: "POST" });
         if (res.ok) {
           alert("Session Ended");
-          fetchSessions(); // Refresh sessions
+          fetchSessions();
         } else {
           alert("Error ending session");
         }
@@ -164,8 +223,39 @@
       }
     }
 
+    // Submit new session form
+    document.getElementById("sessionForm").addEventListener("submit", async function (e) {
+      e.preventDefault();
+      const formData = new FormData(this);
+      const data = {};
+      formData.forEach((value, key) => {
+        if (key === "isChild") data[key] = true;
+        else data[key] = value;
+      });
+      if (!data.isChild) data["isChild"] = false;
+
+      try {
+        const res = await fetch("/api/start-session", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify(data),
+        });
+        if (res.ok) {
+          alert("Session started!");
+          this.reset();
+          fetchSessions();
+        } else {
+          const err = await res.text();
+          alert("Error: " + err);
+        }
+      } catch (err) {
+        alert("Network error starting session.");
+        console.error(err);
+      }
+    });
+
     fetchSessions();
-    setInterval(fetchSessions, 300000);
+    setInterval(fetchSessions, 30000); // refresh every 5 min
   </script>
 </body>
 </html>
