@@ -145,7 +145,7 @@
         const start = new Date(session.startTime);
         const diffMs = now - start;
         const usedMinutes = Math.floor(diffMs / 60000);
-        const allocated = Number(session.duration);
+        const allocated = Number(session.allocatedMinutes);
         const remaining = allocated - usedMinutes;
 
         let bgClass = '';
