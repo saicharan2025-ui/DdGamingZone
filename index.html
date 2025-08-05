@@ -136,7 +136,7 @@
     const sessionsContainer = document.getElementById('sessionsContainer');
 
     async function fetchSessions() {
-      const res = await fetch('/api/sessions');
+      const res = await fetch('/api/active-sessions');
       const sessions = await res.json();
       sessionsContainer.innerHTML = '';
       const now = new Date();
