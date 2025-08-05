@@ -18,7 +18,7 @@ const sessionSchema = new mongoose.Schema({
     required: true,
     enum: [
       'PC1', 'PC2', 'PC3', 'PC4', 'PC5', 'PC6',
-      'PS1', 'PS2'
+      'PS4-1', 'PS4-2'
     ],
   },
   duration: {
