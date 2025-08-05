@@ -96,11 +96,11 @@ app.post('/api/end-session/:id', async (req, res) => {
 
     const now = new Date();
     const start = new Date(session.startTime);
-    const durationMinutes = Math.ceil((now - start) / (1000 * 60));
+    const usedMinutes = Math.ceil((now - start) / (1000 * 60));
 
     session.endTime = now;
     session.isActive = false;
-    session.duration = durationMinutes;
+    session.usedMinutes = usedMinutes;
 
     await session.save();
 
@@ -110,7 +110,6 @@ app.post('/api/end-session/:id', async (req, res) => {
     res.status(500).json({ error: 'Error ending session' });
   }
 });
-
 
 // Serve index.html on root
 app.get("/", (req, res) => {
