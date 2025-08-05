@@ -21,9 +21,9 @@ const sessionSchema = new mongoose.Schema({
       'PS4-1', 'PS4-2'
     ],
   },
-  duration: {
-    type: Number // in minutes
-    // Do NOT set `required: true`
+ allocatedMinutes: {
+    type: Number,
+    required: true
   },
    usedMinutes: {
     type: Number // in minutes
