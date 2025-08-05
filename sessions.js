@@ -9,6 +9,10 @@ const sessionSchema = new mongoose.Schema({
     type: String,
     required: true
   },
+  isChild: {
+    type: Boolean,
+    default: false
+  },
   address: {
     type: String,
     required: true
