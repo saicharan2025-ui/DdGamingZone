@@ -7,194 +7,165 @@
   <style>
     body {
       margin: 0;
-      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-      background: url('https://png.pngtree.com/thumb_back/fh260/background/20250524/pngtree-dark-themed-chess-composition-with-glowing-metal-king-image_17338044.jpg') no-repeat center center fixed;
+      padding: 0;
+      font-family: 'Segoe UI', sans-serif;
+      background-image: url('https://png.pngtree.com/thumb_back/fh260/background/20250524/pngtree-dark-themed-chess-composition-with-glowing-metal-king-image_17338044.jpg'); /* ✅ Background image restored */
       background-size: cover;
-      color: #fff;
+      background-position: center;
+      color: white;
     }
 
-    .nav {
+    header {
       background-color: rgba(0, 0, 0, 0.7);
-      padding: 10px 20px;
+      padding: 1rem;
       display: flex;
       justify-content: space-between;
       align-items: center;
     }
 
-    .nav h2 {
-      margin: 0;
+    .session-card {
+      background-color: rgba(255, 255, 255, 0.1);
+      padding: 1rem;
+      border-radius: 10px;
+      margin-bottom: 1rem;
+      transition: background-color 0.3s;
+    }
+
+    .session-card.orange {
+      background-color: rgba(255, 165, 0, 0.6);
+    }
+
+    .session-card.red {
+      background-color: rgba(255, 0, 0, 0.6);
     }
 
     .container {
-      padding: 20px;
+      padding: 1rem;
     }
 
-    form {
-      background-color: rgba(0, 0, 0, 0.6);
-      padding: 20px;
-      border-radius: 10px;
-      margin-bottom: 30px;
-    }
-
-    form input, form select {
-      width: 100%;
-      padding: 10px;
-      margin: 10px 0;
-      border: none;
-      border-radius: 5px;
-    }
-
-    .btn {
-      background-color: #28a745;
+    button {
+      background-color: #2196f3;
       color: white;
-      padding: 10px 15px;
       border: none;
+      padding: 0.5rem 1rem;
       border-radius: 5px;
+      margin-right: 5px;
       cursor: pointer;
-    }
-
-    .card {
-      background-color: rgba(255, 255, 255, 0.9);
-      color: #000;
-      padding: 15px;
-      border-radius: 10px;
-      margin-bottom: 20px;
-    }
-
-    .session-list {
-      display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
-      gap: 20px;
     }
 
     .whatsapp-btn {
       background-color: #25d366;
       border: none;
-      color: white;
-      padding: 6px 12px;
+      padding: 5px 10px;
       border-radius: 5px;
-      margin-top: 5px;
+      color: white;
       cursor: pointer;
+    }
+
+    .nav-btn {
+      background-color: transparent;
+      border: 2px solid white;
+      color: white;
+      padding: 0.5rem 1rem;
+      border-radius: 5px;
+      text-decoration: none;
     }
   </style>
 </head>
 <body>
-  <div class="nav">
+  <header>
     <h2>🎮 DD's Play Arena</h2>
-    <a href="dashboard.html" style="color:white; text-decoration: none;">DD's Play Arena Monitor</a>
-  </div>
+    <a class="nav-btn" href="dashboard.html">Go to Dashboard</a> <!-- ✅ Dashboard button -->
+  </header>
 
-  <div class="container">
-    <form id="sessionForm">
-      <h3>Start New Session</h3>
-      <input type="text" id="name" placeholder="Player Name" required />
-      <input type="text" id="mobile" placeholder="Mobile Number" required />
-      <input type="text" id="address" placeholder="Address" required />
-      <select id="systemNumber" required>
-        <option value="">Select System</option>
-        <option value="PC1">PC1</option>
-        <option value="PC2">PC2</option>
-        <option value="PC3">PC3</option>
-        <option value="PC4">PC4</option>
-        <option value="PC5">PC5</option>
-        <option value="PC6">PC6</option>
-        <option value="PS1">PS1</option>
-        <option value="PS2">PS2</option>
-      </select>
-      <input type="number" id="allocatedMinutes" placeholder="Allocated Time (minutes)" required />
-      <label><input type="checkbox" id="isChild" /> Below 12 Years?</label><br/>
-      <button type="submit" class="btn">Start Session</button>
-    </form>
-
-    <h3>🟢 Active Sessions</h3>
-    <div class="session-list" id="sessionCards"></div>
+  <div class="container" id="sessionContainer">
+    <!-- Session cards will be injected here -->
   </div>
 
   <script>
-    const sessionForm = document.getElementById("sessionForm");
-    const sessionCards = document.getElementById("sessionCards");
+    const container = document.getElementById("sessionContainer");
 
-    async function loadActiveSessions() {
-      const res = await fetch("/api/active-sessions");
-      const sessions = await res.json();
-
-      sessionCards.innerHTML = "";
-      sessions.forEach(generateSessionCard);
-    }
-
-    function generateSessionCard(session) {
-      const card = document.createElement("div");
-      card.className = "card";
-
-      const now = new Date();
-      const startTime = new Date(session.startTime);
-      const elapsed = Math.floor((now - startTime) / 60000);
-      const remaining = session.allocatedMinutes - elapsed;
-
-      card.innerHTML = `
-        <p><strong>Name:</strong> ${session.name}</p>
-        <p><strong>System:</strong> ${session.systemNumber}</p>
-        <p><strong>Child:</strong> ${session.isChild ? "Yes" : "No"}</p>
-        <p><strong>Allocated:</strong> ${session.allocatedMinutes} mins</p>
-        <p><strong>Used:</strong> ${elapsed} mins</p>
-        <p><strong>Remaining:</strong> ${remaining < 0 ? 0 : remaining} mins</p>
-        <button class="btn" onclick="endSession('${session._id}')">End</button>
-        ${session.isChild && elapsed >= 60 ? `
-          <button class="whatsapp-btn" onclick="notifyParent('${session.name}', '${session.mobile}')">
-            Notify Parent
-          </button>` : ""}
-      `;
-      sessionCards.appendChild(card);
-    }
-
-    async function endSession(id) {
-      if (confirm("End this session?")) {
-        await fetch(`/api/end-session/${id}`, { method: "POST" });
-        loadActiveSessions();
+    async function fetchSessions() {
+      try {
+        const res = await fetch("/api/active-sessions");
+        const sessions = await res.json();
+        renderSessions(sessions);
+      } catch (err) {
+        console.error("Error fetching sessions:", err);
       }
+    }
+
+    function renderSessions(sessions) {
+      container.innerHTML = '';
+      sessions.forEach((session) => {
+        const allocated = session.duration || 0;
+        const start = new Date(session.startTime);
+        const now = new Date();
+        const used = Math.floor((now - start) / 60000);
+        const remaining = allocated - used;
+
+        // Color logic
+        let className = "session-card";
+        if (allocated > 0) {
+          const percentLeft = (remaining / allocated) * 100;
+          if (percentLeft <= 10) {
+            className += " red";
+          } else if (percentLeft <= 20) {
+            className += " orange";
+          }
+        }
+
+        const card = document.createElement("div");
+        card.className = className;
+
+        card.innerHTML = `
+          <h3>${session.name} (${session.systemNumber})</h3>
+          <p><strong>Mobile:</strong> ${session.mobile}</p>
+          <p><strong>Address:</strong> ${session.address}</p>
+          <p><strong>Allocated:</strong> ${allocated} mins</p>
+          <p><strong>Used:</strong> ${used} mins</p>
+          <p><strong>Remaining:</strong> ${remaining >= 0 ? remaining : 0} mins</p>
+          <p><strong>Child:</strong> ${session.isChild ? 'Yes' : 'No'}</p>
+          <div>
+            <button onclick="endSession('${session._id}')">End Session</button>
+            ${
+              session.isChild
+                ? `<button class="whatsapp-btn" onclick="notifyParent('${session.name}', '${session.mobile}')">📲 Notify Parent</button>`
+                : ''
+            }
+          </div>
+        `;
+
+        container.appendChild(card);
+      });
     }
 
     function notifyParent(name, mobile) {
-      const message = `Hi, We are from DD's Play Arena,your child ${name} has completed 1 hour of gameplay at our Play Arena. Please confirm if they can continue.`;
-      const url = `https://web.whatsapp.com/send?phone=91${mobile}&text=${encodeURIComponent(message)}`;
+      const message = encodeURIComponent(
+        `Dear Parent, your child ${name} has completed 1 hour of gaming at our zone. Please reply to extend the time or pick them up. - Gaming Zone`
+      );
+      const url = `https://web.whatsapp.com/send?phone=91${mobile}&text=${message}`;
       window.open(url, "_blank");
     }
 
-    sessionForm.addEventListener("submit", async (e) => {
-      e.preventDefault();
-
-      const nameInput = document.getElementById("name");
-      const mobileInput = document.getElementById("mobile");
-      const addressInput = document.getElementById("address");
-      const systemSelect = document.getElementById("systemNumber");
-      const allocatedMinutes = document.getElementById("allocatedMinutes");
-      const childCheckbox = document.getElementById("isChild");
-
-      const payload = {
-        name: nameInput.value,
-        mobile: mobileInput.value,
-        address: addressInput.value,
-        systemNumber: systemSelect.value,
-        isChild: childCheckbox.checked,
-        allocatedMinutes: parseInt(allocatedMinutes.value) || 60
-      };
-
-      const res = await fetch("/api/start-session", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(payload),
-      });
-
-      if (res.ok) {
-        sessionForm.reset();
-        loadActiveSessions();
-      } else {
-        alert("Failed to start session.");
+    async function endSession(id) {
+      try {
+        const res = await fetch(`/api/end-session/${id}`, {
+          method: "POST",
+        });
+        if (res.ok) {
+          alert("Session Ended");
+          fetchSessions(); // Refresh sessions
+        } else {
+          alert("Error ending session");
+        }
+      } catch (err) {
+        console.error("Error ending session:", err);
       }
-    });
+    }
 
-    loadActiveSessions();
-    setInterval(loadActiveSessions, 30000); // refresh every 30 sec
+    fetchSessions();
+    setInterval(fetchSessions, 300000);
   </script>
 </body>
 </html>
