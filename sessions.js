@@ -25,6 +25,10 @@ const sessionSchema = new mongoose.Schema({
     type: Number // in minutes
     // Do NOT set `required: true`
   },
+   usedMinutes: {
+    type: Number // in minutes
+    // Do NOT set `required: true`
+  },
   startTime: {
     type: Date,
     default: Date.now
